@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\KLcLua">
+      <UniqueIdentifier>{273b81f1-31b6-44c0-a53e-a8c422b22e3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KLcBase">
+      <UniqueIdentifier>{8e003e48-009d-4358-9830-1ca54f4357d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KLcFSM">
+      <UniqueIdentifier>{519d406d-68c8-41eb-a49e-1a4c6a9b3557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KLcLua">
+      <UniqueIdentifier>{c9bfe098-1485-4388-ae20-2cfae518143a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KLcLog">
+      <UniqueIdentifier>{ae2b3151-6e64-433e-ad4f-85d347497711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\KLcLog">
+      <UniqueIdentifier>{5cff241a-2f47-4540-bd07-6b69953234eb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcLua.h">
+      <Filter>Header Files\KLcLua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcWin.h">
+      <Filter>Header Files\KLcLua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KBaseMacro.h">
+      <Filter>Header Files\KLcBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcFSM.h">
+      <Filter>Header Files\KLcFSM</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLog.h">
+      <Filter>Header Files\KLcLog</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcLua.c">
+      <Filter>Source Files\KLcLua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcWin.c">
+      <Filter>Source Files\KLcLua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLog.c">
+      <Filter>Source Files\KLcLog</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
