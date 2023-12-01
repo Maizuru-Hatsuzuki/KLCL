@@ -54,6 +54,8 @@ KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
 
 	KLLOG(KLOG_INFO, L"Uninit share memory success!");
 
+	kbRet = KL_TRUE;
+
 Exit0:
 	return kbRet;
 }

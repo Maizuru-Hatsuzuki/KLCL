@@ -29,7 +29,7 @@ do									\
 } while (0)
 
 typedef int LUARETURN;
-typedef int KLcBool;
+
 
 LUARETURN GetKLclVersionR(lua_State* L);
 void SetKLlEnumFSMStatus(lua_State * L);

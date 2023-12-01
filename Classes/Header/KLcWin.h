@@ -8,6 +8,7 @@
 #ifndef __KLCWIN_H__
 #define __KLCWIN_H__
 
+#include "KBase.h"
 #include "KLcLua.h"
 #include "KLcWin.h"
 #include <Windows.h>
@@ -25,7 +26,7 @@ struct _tKLwPaddingShareMemDesc
 	KLEM_FSMSTATUS emFsmStatus;
 };
 
-typedef struct _tKLwShareMemDesc		KLWSHAREMEMDESC, * KLWSHAREMEMDESC_PTR;
+typedef struct _tKLwShareMemDesc	KLWSHAREMEMDESC, * KLWSHAREMEMDESC_PTR;
 typedef struct _tKLwPaddingShareMemDesc	KLWPADDINGSHAREMEMDESC, * KLWPADDINGSHAREMEMDESC_PTR;
 
 KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc);

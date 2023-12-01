@@ -1,6 +1,7 @@
 #ifndef __KLOG_H__
 #define __KLOG_H__
 
+#include "KBase.h"
 #include "KLcLua.h"
 #include <Windows.h>
 

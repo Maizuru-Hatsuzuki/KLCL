@@ -80,12 +80,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)X64D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)X64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -137,8 +137,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)Resources\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;python37_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,14 +160,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)Resources\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;python3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Classes\Header\KBase.h" />
     <ClInclude Include="..\Classes\Header\KBaseMacro.h" />
     <ClInclude Include="..\Classes\Header\KLcFSM.h" />
     <ClInclude Include="..\Classes\Header\KLcLua.h" />
+    <ClInclude Include="..\Classes\Header\KLcPy.h" />
     <ClInclude Include="..\Classes\Header\KLcWin.h" />
     <ClInclude Include="..\Classes\Header\KLog.h" />
     <ClInclude Include="framework.h" />
@@ -175,8 +177,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\KLcLua.c" />
+    <ClCompile Include="..\Classes\KLcPyContainerLib.c" />
     <ClCompile Include="..\Classes\KLcWin.c" />
     <ClCompile Include="..\Classes\KLog.c" />
+    <ClCompile Include="..\Classes\KLcPy.c" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

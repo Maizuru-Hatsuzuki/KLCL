@@ -31,6 +31,12 @@
     <Filter Include="Header Files\KLcLog">
       <UniqueIdentifier>{5cff241a-2f47-4540-bd07-6b69953234eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\KLcPy">
+      <UniqueIdentifier>{0b982706-a871-4e47-82fc-26ebd87d16ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KLcPy">
+      <UniqueIdentifier>{ec9a75fd-5734-49be-a2a8-b147cde9f817}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +60,12 @@
     <ClInclude Include="..\Classes\Header\KLog.h">
       <Filter>Header Files\KLcLog</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcPy.h">
+      <Filter>Header Files\KLcPy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KBase.h">
+      <Filter>Header Files\KLcBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -70,6 +82,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\KLog.c">
       <Filter>Source Files\KLcLog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcPy.c">
+      <Filter>Source Files\KLcPy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcPyContainerLib.c">
+      <Filter>Source Files\KLcPy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
