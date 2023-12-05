@@ -1,10 +1,17 @@
+/********************************************************
+* Filename		: KLcPyContainerLib.c
+* Creator		: lidiankai
+* Date time		: 2023.12.04
+* Description	: KLCL python frame data struct.
+********************************************************/
+
 #include "KBaseMacro.h"
 #include "KLcPy.h"
 
 
 KLcBool KLpdCreatePy3ObjectArray(KLPPY3OBJECTARRAY_PTR* ppArray)
 {
-	KLcBool kbBool = KL_FALSE;
+	KLcBool klBool = KL_FALSE;
 	KLPPY3OBJECTARRAY_PTR pRet = KL_MALLOC(KLPPY3OBJECTARRAY);
 	KL_PROCESS_ERROR(pRet);
 
@@ -18,10 +25,10 @@ KLcBool KLpdCreatePy3ObjectArray(KLPPY3OBJECTARRAY_PTR* ppArray)
 	KLpdCreatePy3ObjectArrayFn(pRet);
 
 	*ppArray = pRet;
-	kbBool = KL_TRUE;
+	klBool = KL_TRUE;
 	
 Exit0:
-	return kbBool;
+	return klBool;
 }
 
 void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray)
@@ -32,7 +39,7 @@ void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray)
 
 KLcBool KLpdDeletePy3ObjectArray(KLPPY3OBJECTARRAY_PTR pArray)
 {
-	KLcBool kbBool = KL_FALSE;
+	KLcBool klBool = KL_FALSE;
 	KLPPY3OBJECTARRAY_PTR ptmpArray = pArray->ptNext;
 	KLPPY3OBJECTARRAY_PTR ptmpTagNode = NULL;
 
@@ -49,14 +56,14 @@ KLcBool KLpdDeletePy3ObjectArray(KLPPY3OBJECTARRAY_PTR pArray)
 
 	KLP_RELEASE(pArray);
 
-	kbBool = KL_TRUE;
+	klBool = KL_TRUE;
 Exit0:
-	return kbBool;
+	return klBool;
 }
 
 KLcBool KLpdAppendPy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, KLPPY3OBJECTLINKCONTAINERDATA_PTR pData)
 {
-	KLcBool kbBool = KL_FALSE;
+	KLcBool klBool = KL_FALSE;
 	KLPPY3OBJECTARRAY_PTR pNode = KL_MALLOC(KLPPY3OBJECTARRAY);
 	KL_PROCESS_ERROR(pNode);
 
@@ -70,14 +77,14 @@ KLcBool KLpdAppendPy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, KLPPY3OBJECTL
 
 	KLpdCreatePy3ObjectArrayFn(pNode);
 
-	kbBool = KL_TRUE;
+	klBool = KL_TRUE;
 Exit0:
-	return kbBool;
+	return klBool;
 }
 
 KLcBool KLpdRemovePy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, unsigned int unPos)
 {
-	KLcBool kbBool = KL_FALSE;
+	KLcBool klBool = KL_FALSE;
 	unsigned int unTag = 0;
 	KLPPY3OBJECTARRAY_PTR ptmpTagNode = NULL;
 	KLPPY3OBJECTARRAY_PTR ptmpTagPreNode = NULL;
@@ -110,9 +117,9 @@ KLcBool KLpdRemovePy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, unsigned int 
 	}
 
 	unTag--;
-	kbBool = KL_TRUE;
+	klBool = KL_TRUE;
 Exit0:
-	return kbBool;
+	return klBool;
 }
 
 void KLpdRealsePy3ObjectNodeData(KLPPY3OBJECTLINKCONTAINERDATA_PTR pData)

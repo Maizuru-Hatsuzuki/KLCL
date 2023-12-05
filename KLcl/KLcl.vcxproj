@@ -82,6 +82,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)X64D</TargetName>
+    <IntDir>$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\bin_d</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -130,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -170,6 +172,7 @@
     <ClInclude Include="..\Classes\Header\KLcFSM.h" />
     <ClInclude Include="..\Classes\Header\KLcLua.h" />
     <ClInclude Include="..\Classes\Header\KLcPy.h" />
+    <ClInclude Include="..\Classes\Header\KLcPyErrCode.h" />
     <ClInclude Include="..\Classes\Header\KLcWin.h" />
     <ClInclude Include="..\Classes\Header\KLog.h" />
     <ClInclude Include="framework.h" />
@@ -178,6 +181,7 @@
   <ItemGroup>
     <ClCompile Include="..\Classes\KLcLua.c" />
     <ClCompile Include="..\Classes\KLcPyContainerLib.c" />
+    <ClCompile Include="..\Classes\KLcPyEvent.c" />
     <ClCompile Include="..\Classes\KLcWin.c" />
     <ClCompile Include="..\Classes\KLog.c" />
     <ClCompile Include="..\Classes\KLcPy.c" />
@@ -188,6 +192,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\x64\bin_d\config.ini" />
+    <None Include="..\x64\bin_d\WizardUltra.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

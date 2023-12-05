@@ -1,8 +1,17 @@
+/********************************************************
+* Filename		: KLcPy.h
+* Creator		: lidiankai
+* Date time		: 2023.12.04
+* Description	: KLCL connect python frame.
+********************************************************/
+
 #ifndef __KLCPY_H__
 #define __KLCPY_H__
 
 #include "Python.h"
 #include "KBase.h"
+#include "KLcPyErrCode.h"
+#include "KLcWin.h"
 
 #define KLP_RELEASE(p) { if (p) { Py_DecRef(p); (p) = NULL; } }
 #define KBOOLFN(fn) KLcBool (*fn)
@@ -11,6 +20,8 @@ typedef PyObject* PPYOBJECT;
 
 #define INTERFACE struct _tKlpPy3ObjectArray
 #define THIS INTERFACE* pThis
+
+enum KLEM_PYERR g_emLastErrCode;
 
 struct _tKlpPy3ObjectLinkContainerData
 {
@@ -43,15 +54,29 @@ struct _tKlpPy3Desc
 
 #undef INTERFACE
 
+// KL Python data struct.
 KLcBool KLpdCreatePy3ObjectArray(KLPPY3OBJECTARRAY_PTR* ppArray);
 KLcBool KLpdDeletePy3ObjectArray(KLPPY3OBJECTARRAY_PTR pArray);
-void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray);
 KLcBool KLpdAppendPy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
 KLcBool KLpdRemovePy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, unsigned int unPos);
+void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray);
 void KLpdRealsePy3ObjectNodeData(KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
+KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, char* cszpClassname, PPYOBJECT* ppClass);
+KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* ppClassRet);
 
+#ifdef __cplusplus
+extern "C" {
+#endif	
+	// KL Python frame.
+	KL_DLLEXPORT KLcBool KLpInitPy3();
+	KL_DLLEXPORT KLcBool KLpUninitPy3();
+	KL_DLLEXPORT KLcBool KLpGetLastError();
+	KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr);
 
-KLcBool KLpInitPyEnv();
-void KLpUninitPyEnv();
+	// KL Python (all private) event.
+	KL_DLLEXPORT KLcBool KLpePfEyeLaunch();
+#ifdef __cplusplus
+}
+#endif
 
 #endif

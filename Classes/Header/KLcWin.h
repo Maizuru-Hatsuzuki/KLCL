@@ -31,5 +31,6 @@ typedef struct _tKLwPaddingShareMemDesc	KLWPADDINGSHAREMEMDESC, * KLWPADDINGSHAR
 
 KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc);
 KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc);
+KLcBool KLwGetIniValue();
 
 #endif

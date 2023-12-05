@@ -59,3 +59,14 @@ KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
 Exit0:
 	return kbRet;
 }
+
+KLcBool KLwGetIniValueString()
+{
+	KLcBool klBool = KL_FALSE;
+
+	
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}

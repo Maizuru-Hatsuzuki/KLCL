@@ -37,6 +37,12 @@
     <Filter Include="Source Files\KLcPy">
       <UniqueIdentifier>{ec9a75fd-5734-49be-a2a8-b147cde9f817}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\ini">
+      <UniqueIdentifier>{c826fb79-5c78-43ba-ab4e-97d6859afb41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KLcBase">
+      <UniqueIdentifier>{d4fe5d93-f6d3-424d-8669-06cc8b5a734a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -46,9 +52,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Header\KLcLua.h">
-      <Filter>Header Files\KLcLua</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Header\KLcWin.h">
       <Filter>Header Files\KLcLua</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Header\KBaseMacro.h">
@@ -66,6 +69,12 @@
     <ClInclude Include="..\Classes\Header\KBase.h">
       <Filter>Header Files\KLcBase</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcWin.h">
+      <Filter>Header Files\KLcBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcPyErrCode.h">
+      <Filter>Header Files\KLcPy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -77,9 +86,6 @@
     <ClCompile Include="..\Classes\KLcLua.c">
       <Filter>Source Files\KLcLua</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\KLcWin.c">
-      <Filter>Source Files\KLcLua</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\KLog.c">
       <Filter>Source Files\KLcLog</Filter>
     </ClCompile>
@@ -89,5 +95,19 @@
     <ClCompile Include="..\Classes\KLcPyContainerLib.c">
       <Filter>Source Files\KLcPy</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\KLcWin.c">
+      <Filter>Source Files\KLcBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcPyEvent.c">
+      <Filter>Source Files\KLcPy</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\x64\bin_d\config.ini">
+      <Filter>Resource Files\ini</Filter>
+    </None>
+    <None Include="..\x64\bin_d\WizardUltra.py">
+      <Filter>Source Files\KLcPy</Filter>
+    </None>
   </ItemGroup>
 </Project>
