@@ -54,7 +54,7 @@ KLcBool KLpdDeletePy3ObjectArray(KLPPY3OBJECTARRAY_PTR pArray)
 		KL_RELEASE(ptmpTagNode);
 	}
 
-	KLP_RELEASE(pArray);
+	KL_RELEASE(pArray);
 
 	klBool = KL_TRUE;
 Exit0:

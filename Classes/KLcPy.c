@@ -5,7 +5,6 @@
 * Description	: KLCL connect python frame.
 ********************************************************/
 
-#define KL_DLLEXPORT
 
 #include "KLcPy.h"
 #include "KLcWin.h"
@@ -29,7 +28,9 @@ KL_DLLEXPORT KLcBool KLpInitPy3()
 	KLP_PROCESS_ERROR(klBool);
 
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append('./')");
+	PyRun_SimpleString("sys.path.append('./Src')");
+
+	KLLOG(KLOG_INFO, L"Init klp python3 success!");
 
 Exit0:
 	return klBool;
@@ -45,12 +46,13 @@ KL_DLLEXPORT KLcBool KLpUninitPy3(KLPPY3OBJECTLINKCONTAINERDATA_PTR pPy3ObjectDa
 		Py_Finalize();
 	}
 
+	KLLOG(KLOG_INFO, L"Uninit klp python3 success!");
 	klBool = KL_TRUE;
 Exit0:
 	return klBool;
 }
 
-KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, char* cszpClassname, PPYOBJECT* ppClass)
+KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, const char* cszpClassname, PPYOBJECT* ppClass)
 {
 	KLcBool klBool = KL_FALSE;
 	PPYOBJECT pModuleDict = NULL;
@@ -75,7 +77,7 @@ KL_DLLEXPORT KLcBool KLpGetLastError()
 	PyObject* pExcValue = NULL;
 	PyObject* pExcTraceback = NULL;
 	PyObject* pErrstr = NULL;
-	char* szpLastErrMsg = "";
+	const char* szpLastErrMsg = "";
 
 	PyErr_Fetch(&pExcType, &pExcValue, &pExcTraceback);
 

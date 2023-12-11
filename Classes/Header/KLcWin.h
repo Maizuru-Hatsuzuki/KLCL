@@ -12,6 +12,7 @@
 #include "KLcLua.h"
 #include "KLcWin.h"
 #include <Windows.h>
+#include <TlHelp32.h>
 
 
 struct _tKLwShareMemDesc
@@ -31,6 +32,6 @@ typedef struct _tKLwPaddingShareMemDesc	KLWPADDINGSHAREMEMDESC, * KLWPADDINGSHAR
 
 KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc);
 KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc);
-KLcBool KLwGetIniValue();
+KL_DLLEXPORT KLcBool KLwGetWindowsProcessInfo(const WCHAR* cwszpProcess, PDWORD pdwPid);
 
 #endif

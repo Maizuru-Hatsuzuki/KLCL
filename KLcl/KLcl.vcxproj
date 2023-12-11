@@ -195,7 +195,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\bin_d\config.ini" />
-    <None Include="..\x64\bin_d\WizardUltra.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

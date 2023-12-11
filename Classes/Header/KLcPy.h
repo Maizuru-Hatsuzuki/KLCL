@@ -15,13 +15,17 @@
 
 #define KLP_RELEASE(p) { if (p) { Py_DecRef(p); (p) = NULL; } }
 #define KBOOLFN(fn) KLcBool (*fn)
+#define ASSERT_KLPRET(fnRet, klpRet) { PyArg_Parse(fnRet, "i", &klpRet); KLpGetLastError(); ASSERT(!(KLEM_ERR_TYPEERR_NONETYPE == g_emLastErrCode)); }
+
+#define KLP_LAUNCHCF_UMAIN(cszpModule, cszpClass)	KLpLaunchClassFn(cszpModule, cszpClass, "UMain")
+#define KLP_LAUNCHF_UMAIN(cszpModule)				KLpLaunchFn(cszpModule, "UMain")
 
 typedef PyObject* PPYOBJECT;
 
-#define INTERFACE struct _tKlpPy3ObjectArray
-#define THIS INTERFACE* pThis
+#define KL_INTERFACE struct _tKlpPy3ObjectArray
+#define KTHIS KL_INTERFACE* pThis
 
-enum KLEM_PYERR g_emLastErrCode;
+extern enum KLEM_PYERR g_emLastErrCode;
 
 struct _tKlpPy3ObjectLinkContainerData
 {
@@ -40,8 +44,8 @@ struct _tKlpPy3ObjectArray
 	struct _tKlpPy3ObjectArray* ptHeadNode;
 	struct _tKlpPy3ObjectArray* ptTailNode;
 	struct _tKlpPy3ObjectArray* ptNext;
-	KBOOLFN(Append)(THIS, KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
-	KBOOLFN(Remove)(THIS, unsigned int unPos);
+	KBOOLFN(Append)(KTHIS, KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
+	KBOOLFN(Remove)(KTHIS, unsigned int unPos);
 };
 typedef struct _tKlpPy3ObjectArray KLPPY3OBJECTARRAY, * KLPPY3OBJECTARRAY_PTR;
 
@@ -52,7 +56,7 @@ struct _tKlpPy3Desc
 	KLPPY3OBJECTARRAY_PTR ptPy3ClassArray;
 };
 
-#undef INTERFACE
+#undef KL_INTERFACE
 
 // KL Python data struct.
 KLcBool KLpdCreatePy3ObjectArray(KLPPY3OBJECTARRAY_PTR* ppArray);
@@ -61,7 +65,7 @@ KLcBool KLpdAppendPy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, KLPPY3OBJECTL
 KLcBool KLpdRemovePy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, unsigned int unPos);
 void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray);
 void KLpdRealsePy3ObjectNodeData(KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
-KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, char* cszpClassname, PPYOBJECT* ppClass);
+KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, const char* cszpClassname, PPYOBJECT* ppClass);
 KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* ppClassRet);
 
 #ifdef __cplusplus
@@ -70,11 +74,10 @@ extern "C" {
 	// KL Python frame.
 	KL_DLLEXPORT KLcBool KLpInitPy3();
 	KL_DLLEXPORT KLcBool KLpUninitPy3();
+	KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn);
+	KL_DLLEXPORT KLcBool KLpLaunchFn(const char* cszpModule, const char* cszpFn);
 	KL_DLLEXPORT KLcBool KLpGetLastError();
 	KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr);
-
-	// KL Python (all private) event.
-	KL_DLLEXPORT KLcBool KLpePfEyeLaunch();
 #ifdef __cplusplus
 }
 #endif

@@ -15,8 +15,9 @@
 #define MAX_ZPRINTF 1024
 #define MAX_CMDRET 10240
 
-#define ASSERT(Condition) if (!(Condition)) __debugbreak()
-#define KL_RELEASE(p) { if (p) { free(p); (p) = NULL; } }
+#define ASSERT(Condition)	if (!(Condition)) __debugbreak()
+#define KL_MALLOC(ptrType)	(ptrType*)malloc(sizeof(ptrType))
+#define KL_RELEASE(p)		{ if (p) { free(p); (p) = NULL; } }
 
 #define KL_PROCESS_SUCCESS(Condition)		\
 do											\

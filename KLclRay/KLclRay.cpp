@@ -1,25 +1,99 @@
+#include "KLcPy.h"
 #include "KLclRay.h"
+#include "KLqtMenu.h"
+#include "KLog.h"
+#include "KBaseMacro.h"
 
+KLclRay* KLclRay::m_pSelf;
 
 
 KLclRay::KLclRay(QWidget *parent)
     : QMainWindow(parent)
 {
-    
-    
-
     ui.setupUi(this);
-	m_fWindowHeight = this->geometry().height();
-	m_fWindowWidth = this->geometry().width();
-
-	m_pQHLayoutBase = new QHBoxLayout;
-	m_pQHLayoutBottom = new QHBoxLayout;
+    ReInit();
 }
 
 KLclRay::~KLclRay()
 {
-    delete m_pQHLayoutBase;
-    delete m_pQHLayoutBottom;
+    KLcBool klBool = KL_FALSE;
+
+    KLQ_RELEASE(m_pQHLayoutBase);
+    KLQ_RELEASE(m_pQHLayoutBottom);
+    KLQ_RELEASE(m_pSelf);
+
+	klBool = KLpUninitPy3();
+	ASSERT(klBool);
+    klBool = CloseHandle(m_hThUpdateSysLog);
+    ASSERT(klBool);
+}
+
+void KLclRay::ReInit()
+{
+	KLcBool klBool = KL_FALSE;
+    DWORD dwThIDUpdateSysLog = 0;
+	m_fWindowHeight = this->geometry().height();
+	m_fWindowWidth = this->geometry().width();
+	m_pQHLayoutBase = new QHBoxLayout;
+	m_pQHLayoutBottom = new QHBoxLayout;
+
+	this->setMenuBar(KLqBaseMenu::getInstance()->getMenuBar());
+
+	klqCreateTextEdit(&m_pQTKLLog);
+	ASSERT(m_pQTKLLog);
+	m_pQHLayoutBase->addWidget(m_pQTKLLog);
+	setLayout(m_pQHLayoutBase);
+
+	klBool = KLpInitPy3();
+	ASSERT(klBool);
+
+	// create thread.
+	m_hThUpdateSysLog = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)KLclRay::klqUpdateSysLog, (LPVOID)this, 0, &dwThIDUpdateSysLog);
+	ASSERT(m_hThUpdateSysLog);
+
+Exit0:
+	return;
+}
+
+KLclRay* KLclRay::getInstance()
+{
+    if (NULL == m_pSelf)
+    {
+        m_pSelf = new KLclRay();
+    }
+    return m_pSelf;
+}
+
+DWORD WINAPI KLclRay::klqUpdateSysLog(LPVOID _this)
+{
+    DWORD dwRet = 0;
+    WCHAR wszarrLog[MAX_ZPRINTF] = { 0 };
+    KLclRay* pThis = (KLclRay*)_this;
+    char szarrLog[MAX_ZPRINTF] = { 0 };
+    int nFlag = KL_TRUE;
+
+    while (1)
+    {
+		KLGetSysLogFlag(&nFlag);
+
+		if (KL_FALSE == nFlag)
+		{
+			KLPushSysLog(wszarrLog, szarrLog);
+			if (0 != wcscmp(L"", wszarrLog))
+			{
+                // Text in szarrLog.
+				KLWCharToChar(wszarrLog, szarrLog);
+			}
+			pThis->klqUpdateText(pThis->m_pQTKLLog, szarrLog);
+            ZeroMemory(szarrLog, MAX_ZPRINTF);
+            ZeroMemory(wszarrLog, MAX_ZPRINTF);
+			KLResetSysLog();
+		}
+    }
+
+    dwRet = 1;
+
+    return dwRet;
 }
 
 void KLclRay::klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit)
@@ -30,7 +104,6 @@ void KLclRay::klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit)
     (*ppQTextEdit)->setGeometry(m_fWindowWidth * KQSCALING_BOTTOMLEFT, m_fWindowHeight * 0.65, m_fWindowWidth * (1 - KQSCALING_BOTTOMLEFT * 2), m_fWindowHeight * 0.3);
     (*ppQTextEdit)->setStyleSheet("QLabel{background-color:rgb(255, 255, 255)}");
     (*ppQTextEdit)->setReadOnly(true);
-    (*ppQTextEdit)->setText("Init success;");
 }
 
 void KLclRay::klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText)
@@ -39,23 +112,9 @@ void KLclRay::klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText)
 
     pCursor.movePosition(QTextCursor::End);
     pTextEdit->setTextCursor(pCursor);
-    pTextEdit->insertPlainText(cszpText);
+    pTextEdit->insertPlainText(tr(cszpText));
 
     return;
 }
 
-void KLclRay::klqShow()
-{
-    PQTEXTEDIT pQTKLLog = NULL;
-    klqCreateTextEdit(&pQTKLLog);
 
-	ASSERT(pQTKLLog);
-
-	m_pQHLayoutBase->addWidget(pQTKLLog);
-	setLayout(m_pQHLayoutBase);
-
-    pQTKLLog->show();
-
-Exit0:
-    return;
-}

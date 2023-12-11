@@ -97,9 +97,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugX64|x64'">
-    <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
     <IntDir>$(Platform)\$(Configuration)</IntDir>
     <OutDir>$(SolutionDir)$(Platform)\bin_d</OutDir>
+    <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX64|x64'">
     <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
@@ -189,13 +189,17 @@
   <ItemGroup>
     <QtRcc Include="KLclRay.qrc" />
     <QtUic Include="KLclRay.ui" />
-    <QtMoc Include="KLclRay.h" />
+    <ClCompile Include="..\Classes\KLqtMenu.cpp" />
+    <ClCompile Include="..\Classes\KLqtTable.cpp" />
     <ClCompile Include="KLclRay.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\Header\KBaseMacro.h" />
+    <ClInclude Include="..\Classes\Header\KLqtTable.h" />
+    <QtMoc Include="..\Classes\Header\KLclRay.h" />
     <ClInclude Include="..\Classes\Header\KLclRayEx.h" />
+    <ClInclude Include="..\Classes\Header\KLqtMenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

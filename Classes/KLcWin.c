@@ -60,11 +60,30 @@ Exit0:
 	return kbRet;
 }
 
-KLcBool KLwGetIniValueString()
+KL_DLLEXPORT KLcBool KLwGetWindowsProcessInfo(const WCHAR* cwszpProcess, PDWORD pdwPid)
 {
 	KLcBool klBool = KL_FALSE;
-
+	int nProcessCount = 0;
+	HANDLE hAllProcess = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	PROCESSENTRY32 tTmpProcess = { 0 };
+	tTmpProcess.dwSize = sizeof(PROCESSENTRY32);
 	
+	KL_PROCESS_SUCCESS(INVALID_HANDLE_VALUE == hAllProcess);
+	klBool = Process32First(hAllProcess, &tTmpProcess);
+	while (klBool)
+	{
+		klBool = Process32Next(hAllProcess, &tTmpProcess);
+		if (0 == wcscmp(tTmpProcess.szExeFile, cwszpProcess))
+		{
+			*pdwPid = tTmpProcess.th32ProcessID;
+			KLLOG(KLOG_INFO, L"Get windows process info success! process: %s, pid: %ul", cwszpProcess, *pdwPid);
+			break;
+		}
+		nProcessCount++;
+	}
+
+	klBool = CloseHandle(hAllProcess);
+	KL_PROCESS_ERROR(klBool);
 
 	klBool = KL_TRUE;
 Exit0:

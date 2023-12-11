@@ -106,8 +106,5 @@
     <None Include="..\x64\bin_d\config.ini">
       <Filter>Resource Files\ini</Filter>
     </None>
-    <None Include="..\x64\bin_d\WizardUltra.py">
-      <Filter>Source Files\KLcPy</Filter>
-    </None>
   </ItemGroup>
 </Project>

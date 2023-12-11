@@ -24,8 +24,11 @@
     <Filter Include="Header Files\KLcBase">
       <UniqueIdentifier>{52f4bff3-6f63-4954-9828-ec7539867cf2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\KLqBase">
+    <Filter Include="Header Files\KLqt">
       <UniqueIdentifier>{41f17ccf-aa19-4bf5-bcec-8ee5486bdce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\KLqt">
+      <UniqueIdentifier>{3cb9fedd-8fc3-41df-9c87-4d2c4275a655}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -35,9 +38,6 @@
     <QtUic Include="KLclRay.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtMoc Include="KLclRay.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <ClCompile Include="KLclRay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,13 +46,30 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\KLqtMenu.cpp">
+      <Filter>Source Files\KLqt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLqtTable.cpp">
+      <Filter>Source Files\KLqt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\Header\KBaseMacro.h">
       <Filter>Header Files\KLcBase</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Header\KLclRayEx.h">
-      <Filter>Header Files\KLqBase</Filter>
+      <Filter>Header Files\KLqt</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLqtMenu.h">
+      <Filter>Header Files\KLqt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLqtTable.h">
+      <Filter>Header Files\KLqt</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="..\Classes\Header\KLclRay.h">
+      <Filter>Header Files\KLqt</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>

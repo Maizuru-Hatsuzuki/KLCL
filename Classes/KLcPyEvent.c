@@ -5,14 +5,13 @@
 * Description	: KLCL private python event.
 ********************************************************/
 
-#define KL_DLLEXPORT
 
 #include "KLcPy.h"
 #include "KLog.h"
 #include "KBaseMacro.h"
 
 
-KL_DLLEXPORT KLcBool KLpePfEyeLaunch()
+KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn)
 {
 	KLcBool klBool = KL_FALSE;
 	KLpFnRet klpRet = KLP_FALSE;
@@ -20,25 +19,49 @@ KL_DLLEXPORT KLcBool KLpePfEyeLaunch()
 	PPYOBJECT pClass = NULL;
 	PPYOBJECT pClassRet = NULL;
 
-	pModule = PyImport_ImportModule("WizardUltra");
+	pModule = PyImport_ImportModule(cszpModule);
 	KLP_PROCESS_ERROR(pModule);
 
-	klBool = KLpGetClassInstance(pModule, "CwuKL25COM", &pClass);
+	klBool = KLpGetClassInstance(pModule, cszpClass, &pClass);
 	KLP_PROCESS_ERROR(klBool);
 
-	klBool = KLpExcutePy3ClassFn(pClass, "getValue", &pClassRet);
+	klBool = KLpExcutePy3ClassFn(pClass, cszpFn, &pClassRet);
 	KLP_PROCESS_ERROR(klBool);
+	ASSERT_KLPRET(pClassRet, klpRet);
 
-	PyArg_Parse(pClassRet, "i", &klpRet);
-	KLpGetLastError();
-	// if python function return is none, crash.
-	ASSERT(!(KLEM_ERR_TYPEERR_NONETYPE == g_emLastErrCode));
-
-	KLLOG(KLOG_INFO, L"PfEye launch ret: %d", klBool);
+	KPrettyPrintfA(KLOG_INFO, "KLpeLaunchClassFn %s::%s in %s, ret: %d", cszpClass, cszpFn, cszpModule, klpRet);
 	klBool = KL_TRUE;
 
 Exit0:
 	KLP_RELEASE(pModule);
 	KLP_RELEASE(pClassRet);
+	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLpLaunchFn(const char* cszpModule, const char* cszpFn)
+{
+	KLcBool klBool = KL_FALSE;
+	KLpFnRet klpRet = KLP_FALSE;
+	PPYOBJECT pModule = NULL;
+	PPYOBJECT pFn = NULL;
+	PPYOBJECT pFnRet = NULL;
+
+	pModule = PyImport_ImportModule(cszpModule);
+	KLP_PROCESS_ERROR(pModule);
+
+	pFn = PyObject_GetAttrString(pModule, cszpFn);
+	KLP_PROCESS_ERROR(pFn);
+
+	pFnRet = PyObject_CallObject(pFn, NULL);
+	KLP_PROCESS_ERROR(pFnRet);
+	ASSERT_KLPRET(pFnRet, klpRet);
+
+	KPrettyPrintfA(KLOG_INFO, "KLpeLaunchClassFn %s in %s, ret: %d", cszpFn, cszpModule, klpRet);
+	klBool = KL_TRUE;
+
+Exit0:
+	KLP_RELEASE(pModule);
+	KLP_RELEASE(pFn);
+	KLP_RELEASE(pFnRet);
 	return klBool;
 }
