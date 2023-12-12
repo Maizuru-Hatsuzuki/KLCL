@@ -17,8 +17,9 @@
 #define KBOOLFN(fn) KLcBool (*fn)
 #define ASSERT_KLPRET(fnRet, klpRet) { PyArg_Parse(fnRet, "i", &klpRet); KLpGetLastError(); ASSERT(!(KLEM_ERR_TYPEERR_NONETYPE == g_emLastErrCode)); }
 
-#define KLP_LAUNCHCF_UMAIN(cszpModule, cszpClass)	KLpLaunchClassFn(cszpModule, cszpClass, "UMain")
-#define KLP_LAUNCHF_UMAIN(cszpModule)				KLpLaunchFn(cszpModule, "UMain")
+#define KLP_LAUNCHCF_WITHNOARGS_UMAIN(cszpModule, cszpClass)							KLpLaunchClassFn(cszpModule, cszpClass, "UMain", NULL, NULL)
+#define KLP_LAUNCHCF_WITHARGS_UMAIN(cszpModule, cszpClass, pArgs, cszpArgsFormat)		KLpLaunchClassFn(cszpModule, cszpClass, "UMain", pArgs, cszpArgsFormat)
+#define KLP_LAUNCHF_UMAIN(cszpModule)													KLpLaunchFn(cszpModule, "UMain")
 
 typedef PyObject* PPYOBJECT;
 
@@ -66,7 +67,7 @@ KLcBool KLpdRemovePy3ObjectArrayNode(KLPPY3OBJECTARRAY_PTR pArray, unsigned int 
 void KLpdCreatePy3ObjectArrayFn(KLPPY3OBJECTARRAY_PTR pArray);
 void KLpdRealsePy3ObjectNodeData(KLPPY3OBJECTLINKCONTAINERDATA_PTR pData);
 KLcBool KLpGetClassInstance(PPYOBJECT pPyFileObject, const char* cszpClassname, PPYOBJECT* ppClass);
-KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* ppClassRet);
+KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* pArgs, const char* cszpArgsFormat, PPYOBJECT* ppClassRet);
 
 #ifdef __cplusplus
 extern "C" {
@@ -74,10 +75,11 @@ extern "C" {
 	// KL Python frame.
 	KL_DLLEXPORT KLcBool KLpInitPy3();
 	KL_DLLEXPORT KLcBool KLpUninitPy3();
-	KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn);
+	KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn, PPYOBJECT pArgs, const char* cszpArgsFormat);
 	KL_DLLEXPORT KLcBool KLpLaunchFn(const char* cszpModule, const char* cszpFn);
 	KL_DLLEXPORT KLcBool KLpGetLastError();
 	KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr);
+	KL_DLLEXPORT KLcBool KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet);
 #ifdef __cplusplus
 }
 #endif

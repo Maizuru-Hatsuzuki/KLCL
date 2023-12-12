@@ -3,6 +3,8 @@
 #include "KLqtMenu.h"
 #include "KLog.h"
 #include "KBaseMacro.h"
+#include <thread>
+
 
 KLclRay* KLclRay::m_pSelf;
 
@@ -24,14 +26,12 @@ KLclRay::~KLclRay()
 
 	klBool = KLpUninitPy3();
 	ASSERT(klBool);
-    klBool = CloseHandle(m_hThUpdateSysLog);
-    ASSERT(klBool);
 }
 
 void KLclRay::ReInit()
 {
 	KLcBool klBool = KL_FALSE;
-    DWORD dwThIDUpdateSysLog = 0;
+    DWORD dwTidUpdateSysLog = 0;
 	m_fWindowHeight = this->geometry().height();
 	m_fWindowWidth = this->geometry().width();
 	m_pQHLayoutBase = new QHBoxLayout;
@@ -46,10 +46,8 @@ void KLclRay::ReInit()
 
 	klBool = KLpInitPy3();
 	ASSERT(klBool);
-
-	// create thread.
-	m_hThUpdateSysLog = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)KLclRay::klqUpdateSysLog, (LPVOID)this, 0, &dwThIDUpdateSysLog);
-	ASSERT(m_hThUpdateSysLog);
+    KLLOG(KLOG_INFO, L"Init klp python success.");
+	klqUpdateSysLog();
 
 Exit0:
 	return;
@@ -64,36 +62,26 @@ KLclRay* KLclRay::getInstance()
     return m_pSelf;
 }
 
-DWORD WINAPI KLclRay::klqUpdateSysLog(LPVOID _this)
+void KLclRay::klqUpdateSysLog()
 {
-    DWORD dwRet = 0;
-    WCHAR wszarrLog[MAX_ZPRINTF] = { 0 };
-    KLclRay* pThis = (KLclRay*)_this;
-    char szarrLog[MAX_ZPRINTF] = { 0 };
-    int nFlag = KL_TRUE;
+	WCHAR wszarrLog[MAX_ZPRINTF] = { 0 };
+	char szarrLog[MAX_ZPRINTF] = { 0 };
+	int nFlag = KL_TRUE;
 
-    while (1)
-    {
-		KLGetSysLogFlag(&nFlag);
-
-		if (KL_FALSE == nFlag)
+    KLGetSysLogFlag(&nFlag);
+	if (KL_FALSE == nFlag)
+	{
+		KLPushSysLog(wszarrLog, szarrLog);
+		if (0 != wcscmp(L"", wszarrLog))
 		{
-			KLPushSysLog(wszarrLog, szarrLog);
-			if (0 != wcscmp(L"", wszarrLog))
-			{
-                // Text in szarrLog.
-				KLWCharToChar(wszarrLog, szarrLog);
-			}
-			pThis->klqUpdateText(pThis->m_pQTKLLog, szarrLog);
-            ZeroMemory(szarrLog, MAX_ZPRINTF);
-            ZeroMemory(wszarrLog, MAX_ZPRINTF);
-			KLResetSysLog();
+		    // Text in szarrLog.
+			KLWCharToChar(wszarrLog, szarrLog);
 		}
-    }
-
-    dwRet = 1;
-
-    return dwRet;
+        klqUpdateText(m_pQTKLLog, szarrLog);
+		ZeroMemory(szarrLog, MAX_ZPRINTF);
+		ZeroMemory(wszarrLog, MAX_ZPRINTF);
+		KLResetSysLog();
+	}
 }
 
 void KLclRay::klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit)
@@ -113,7 +101,8 @@ void KLclRay::klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText)
     pCursor.movePosition(QTextCursor::End);
     pTextEdit->setTextCursor(pCursor);
     pTextEdit->insertPlainText(tr(cszpText));
-
+    QCoreApplication::processEvents();
+    
     return;
 }
 

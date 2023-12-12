@@ -20,8 +20,8 @@ public:
 	static KLqBaseMenu* getInstance();
 
 public slots:
-	KLcBool KLqeOnActionConnectPfEye();
-	KLcBool KLqeOnActionDisconnectPfEye();
+	KLcBool kqeOnActionConnectPfEye();
+	KLcBool kqeOnActionDisconnectPfEye();
 
 signals:
 	void KLQS_CLICK();
@@ -34,8 +34,12 @@ private:
 	KLqBaseMenu(const KLqBaseMenu& pSelf);
 	const KLqBaseMenu& operator=(const KLqBaseMenu& pSelf);
 
+	static DWORD WINAPI kqThLaunchPfeye(LPVOID vp, LPVOID _vp);
+
 private:
 	static KLqBaseMenu* m_pSelf;
+	HANDLE m_hThPfEye;
+
 	// Menu -> QMenuBar
 	PQMENUBAR m_pMenuBar;
 

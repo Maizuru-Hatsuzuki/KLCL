@@ -29,7 +29,7 @@ do										\
 
 
 #ifdef UNICODE
-#define KLLOG		Sleep(1); KPrettyPrintfW
+#define KLLOG(level, fmt, ...)		{ Sleep(1); KPrettyPrintfW(KLOG_INFO, fmt, __VA_ARGS__); }
 #define KLBASELOG	KBaseInfoPrintfW
 
 #else

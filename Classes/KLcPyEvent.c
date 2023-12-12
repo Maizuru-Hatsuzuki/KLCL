@@ -10,8 +10,18 @@
 #include "KLog.h"
 #include "KBaseMacro.h"
 
+KL_DLLEXPORT KLcBool KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet)
+{
+	PyObject* pArgs = PyTuple_New(cnArgsCount);
+	
+	for (size_t i = 0; i < cnArgsCount; i++)
+	{
+		PyTuple_SetItem(pArgs, i, Py_BuildValue("i", cnarrData[i]));
+	}
+	*ppRet = pArgs;
+}
 
-KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn)
+KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpClass, const char* cszpFn, PPYOBJECT pArgs, const char* cszpArgsFormat)
 {
 	KLcBool klBool = KL_FALSE;
 	KLpFnRet klpRet = KLP_FALSE;
@@ -25,7 +35,7 @@ KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpCl
 	klBool = KLpGetClassInstance(pModule, cszpClass, &pClass);
 	KLP_PROCESS_ERROR(klBool);
 
-	klBool = KLpExcutePy3ClassFn(pClass, cszpFn, &pClassRet);
+	klBool = KLpExcutePy3ClassFn(pClass, cszpFn, pArgs, cszpArgsFormat, &pClassRet);
 	KLP_PROCESS_ERROR(klBool);
 	ASSERT_KLPRET(pClassRet, klpRet);
 
@@ -35,6 +45,7 @@ KL_DLLEXPORT KLcBool KLpLaunchClassFn(const char* cszpModule, const char* cszpCl
 Exit0:
 	KLP_RELEASE(pModule);
 	KLP_RELEASE(pClassRet);
+	
 	return klBool;
 }
 

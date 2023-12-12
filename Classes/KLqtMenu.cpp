@@ -5,10 +5,12 @@
 * Description	: qt menu logic.
 ********************************************************/
 
+#include <thread>
 #include "KLcPy.h"
 #include "KLqtMenu.h"
 #include "KBaseMacro.h"
 #include "KLog.h"
+
 
 
 KLqBaseMenu* KLqBaseMenu::m_pSelf;
@@ -37,8 +39,8 @@ KLqBaseMenu::KLqBaseMenu()
 	m_pMenuBar->addMenu(m_pMenuSetting);
 	m_pMenuBar->addMenu(m_pMenuAbout);
 
-	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::KLqeOnActionConnectPfEye);
-	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::KLqeOnActionDisconnectPfEye);
+	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionConnectPfEye);
+	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
 }
 
 KLqBaseMenu::~KLqBaseMenu()
@@ -68,24 +70,65 @@ PQMENUBAR KLqBaseMenu::getMenuBar()
 {
 	return m_pMenuBar;
 }
-	
-KLcBool KLqBaseMenu::KLqeOnActionConnectPfEye()
+
+DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID vp, LPVOID _vp)
 {
 	KLcBool klBool = KL_FALSE;
-	KLLOG(KLOG_INFO, L"Connecting perfeye.");
-	/*klBool = KLP_LAUNCHCF_UMAIN("WizardUltra", "UAConnectPfeye");
-	KL_PROCESS_ERROR(klBool);*/
-	KLLOG(KLOG_INFO, L"Connect perfeye success.");
+	PyGILState_STATE gState;
+	PPYOBJECT pArgs = (PPYOBJECT)_vp;
 
-	klBool = KL_TRUE;
+	gState = PyGILState_Ensure();
+	klBool = KLP_LAUNCHCF_WITHARGS_UMAIN("WizardUltra", "UAConnectPfeye", pArgs, "O");
+	ASSERT(klBool);
+	PyGILState_Release(gState);
+	return klBool;
+}
+	
+KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
+{
+	KLcBool klBool = KL_FALSE;
+	DWORD dwTidPfeye = 0;
+	std::thread thPfEye;
+	PyThreadState* pPyThState = NULL;
+	PPYOBJECT pArgs = NULL;
+	const int cnarrArgs[1] = { 1 };
+
+	KLpGetPyTupleInt(1, cnarrArgs, &pArgs);
+	KL_PROCESS_ERROR(pArgs);
+	
+	KLQ_LOG(KLOG_INFO, L"Connecting perfeye.");
+
+	PyEval_InitThreads();
+	Py_BEGIN_ALLOW_THREADS
+		thPfEye = std::thread(KLqBaseMenu::kqThLaunchPfeye, this, pArgs);
+		thPfEye.join();
+		Sleep(2000);
+
+	if (NULL == m_hThPfEye)
+	{
+		KLQ_LOG(KLOG_INFO, L"Connect perfeye failed.");
+	}
+	else
+	{
+		KLQ_LOG(KLOG_INFO, L"Connect perfeye success.");
+		klBool = KL_TRUE;
+	}
+	Py_END_ALLOW_THREADS
+
 Exit0:
 	return klBool;
 }
 
-KLqBool KLqBaseMenu::KLqeOnActionDisconnectPfEye()
+KLqBool KLqBaseMenu::kqeOnActionDisconnectPfEye()
 {
 	KLcBool klBool = KL_FALSE;
-	klBool = KLP_LAUNCHCF_UMAIN("WizardUltra", "UADisconnectPfeye");
+	PPYOBJECT pArgs = NULL;
+	const int cnarrArgs[1] = { 0 };
+
+	KLpGetPyTupleInt(1, cnarrArgs, &pArgs);
+	KL_PROCESS_ERROR(pArgs);
+
+	klBool = KLP_LAUNCHCF_WITHARGS_UMAIN("WizardUltra", "UAConnectPfeye", pArgs, "O");
 	KL_PROCESS_ERROR(klBool);
 
 	klBool = KL_TRUE;

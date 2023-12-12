@@ -13,8 +13,10 @@
 #include "KLclRayEx.h"
 #include "ui_KLclRay.h"
 
-#define KLQ_NEW(qType, s)     new qType(s)
-#define KLQ_RELEASE(p)        { if (p) { delete p; (p) = NULL; } }
+#define KLQ_NEW(qType, s)		new qType(s)
+#define KLQ_RELEASE(p)			{ if (p) { delete p; (p) = NULL; } }
+#define KLQ_UPDATELOG			KLclRay::getInstance()->klqUpdateSysLog
+#define KLQ_LOG(level, fmt, ...)	{ KLLOG(level, fmt, __VA_ARGS__); KLQ_UPDATELOG(); }
 
 typedef int         KLqBool;
 typedef QTextEdit*  PQTEXTEDIT;
@@ -34,7 +36,8 @@ class KLclRay : public QMainWindow
 public:
 	void ReInit();
 	static KLclRay* getInstance();
-	static DWORD WINAPI klqUpdateSysLog(LPVOID _this);
+	//static DWORD WINAPI klqUpdateSysLog(LPVOID _this);
+	void KLclRay::klqUpdateSysLog();
     void klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText);
     void klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit);
 
@@ -51,7 +54,6 @@ private:
 	float m_fWindowHeight = 0;
 	float m_fWindowWidth = 0;
 
-	HANDLE m_hThUpdateSysLog = NULL;
 	PQTEXTEDIT m_pQTKLLog = NULL;
 	QHBoxLayout* m_pQHLayoutBase = NULL;
 	QHBoxLayout* m_pQHLayoutBottom = NULL;

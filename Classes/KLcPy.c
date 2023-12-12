@@ -30,8 +30,6 @@ KL_DLLEXPORT KLcBool KLpInitPy3()
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append('./Src')");
 
-	KLLOG(KLOG_INFO, L"Init klp python3 success!");
-
 Exit0:
 	return klBool;
 }
@@ -43,7 +41,7 @@ KL_DLLEXPORT KLcBool KLpUninitPy3(KLPPY3OBJECTLINKCONTAINERDATA_PTR pPy3ObjectDa
 	klBool = Py_IsInitialized();
 	if (KL_TRUE == klBool)
 	{
-		Py_Finalize();
+		Py_FinalizeEx();
 	}
 
 	KLLOG(KLOG_INFO, L"Uninit klp python3 success!");
@@ -118,7 +116,7 @@ KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr)
 	return nMatching;
 }
 
-KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* ppClassRet)
+KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* pArgs, const char* cszpArgsFormat, PPYOBJECT* ppClassRet)
 {
 	KLcBool klBool = KL_FALSE;
 	PPYOBJECT pClassConstruct = NULL;
@@ -130,7 +128,7 @@ KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* ppC
 	pClassIns = PyObject_CallObject(pClassConstruct, NULL);
 	KLP_PROCESS_ERROR(pClassIns);
 
-	*ppClassRet = PyObject_CallMethod(pClassIns, cszpFn, NULL);
+	*ppClassRet = PyObject_CallMethod(pClassIns, cszpFn, cszpArgsFormat, pArgs);
 	KLP_PROCESS_ERROR(*ppClassRet);
 
 	klBool = KL_TRUE;

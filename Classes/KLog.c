@@ -1,47 +1,21 @@
 #include "KLog.h"
+#include <time.h>
 
-
-
-void KBaseInfoPrintfA()
-{
-	printf_s("%s, %s ", __DATE__, __TIME__);
-}
-
-
-KLcBool KBaseInfoPrintfW()
-{
-	KLcBool kbResult = KL_FALSE;
-	DWORD dwFuncRes = -1;
-	WCHAR wszarrDate[32] = KLCL_ARRNULL;
-	WCHAR wszarrTime[32] = KLCL_ARRNULL;
-
-	dwFuncRes = MultiByteToWideChar(CP_UTF8, 0, __DATE__, -1, wszarrDate, 32);
-	KL_PROCESS_ERROR(dwFuncRes);
-
-	dwFuncRes = MultiByteToWideChar(CP_UTF8, 0, __TIME__, -1, wszarrTime, 32);
-	KL_PROCESS_ERROR(dwFuncRes);
-
-	dwFuncRes = wprintf_s(L"%s, %s ", wszarrDate, wszarrTime);
-	kbResult = KL_TRUE;
-
-Exit0:
-	return kbResult;
-
-}
 
 KL_DLLEXPORT KLcBool KPrettyPrintfW(enum KLEM_LOGLEVEL emLevel, LPCWSTR cwszpText, ...)
 {
 	KLcBool kbResult = KL_FALSE;
 	WCHAR wszarrText[MAX_ZPRINTF] = { 0 };
 	WCHAR* wszpLevel = L"";
-	WCHAR wszarrDate[32] = KLCL_ARRNULL;
-	WCHAR wszarrTime[32] = KLCL_ARRNULL;
-	DWORD dwFuncRes = -1;
+	WCHAR wszarrDatetime[32] = KLCL_ARRNULL;
+	time_t ullTime = 0;
+	errno_t err = 0;
 
-	dwFuncRes = MultiByteToWideChar(CP_UTF8, 0, __DATE__, -1, wszarrDate, 32);
-	KL_PROCESS_ERROR(dwFuncRes);
-	dwFuncRes = MultiByteToWideChar(CP_UTF8, 0, __TIME__, -1, wszarrTime, 32);
-	KL_PROCESS_ERROR(dwFuncRes);
+	time(&ullTime);
+	err = _wctime_s(wszarrDatetime, 32, &ullTime);
+	ASSERT(0 == err);
+	// delete "\n"
+	wszarrDatetime[24] = L'\0';
 
 	switch (emLevel)
 	{
@@ -66,11 +40,10 @@ KL_DLLEXPORT KLcBool KPrettyPrintfW(enum KLEM_LOGLEVEL emLevel, LPCWSTR cwszpTex
 	}
 
 	// print date time.
-	kbResult = KLBASELOG();
-	KL_PROCESS_ERROR(kbResult);
+	wprintf_s(L"%s ", wszarrDatetime);
 	KL_VAOUTW(cwszpText, wszarrText);
 
-	wsprintf(g_tKlSysLog.wszarrLog, L"%s %s %s%s\n", wszarrDate, wszarrTime, wszpLevel, wszarrText);
+	wsprintf(g_tKlSysLog.wszarrLog, L"%s %s%s\n", wszarrDatetime, wszpLevel, wszarrText);
 	g_tKlSysLog.kbIsPrintfFlag = KL_FALSE;
 
 	wprintf_s(L"\n");
@@ -87,6 +60,15 @@ KL_DLLEXPORT KLcBool KPrettyPrintfA(enum KLEM_LOGLEVEL emLevel, const char* cszp
 	KLcBool kbResult = KL_FALSE;
 	char szarrText[MAX_ZPRINTF] = { 0 };
 	char* szpLevel = "";
+	char szarrDatetime[32] = KLCL_ARRNULL;
+	time_t ullTime = 0;
+	errno_t err = 0;
+
+	time(&ullTime);
+	err = ctime_s(szarrDatetime, 32, &ullTime);
+	ASSERT(0 == err);
+	// delete "\n"
+	szarrDatetime[24] = '\0';
 
 	switch (emLevel)
 	{
@@ -111,11 +93,10 @@ KL_DLLEXPORT KLcBool KPrettyPrintfA(enum KLEM_LOGLEVEL emLevel, const char* cszp
 	}
 
 	// print date time.
-	kbResult = KLBASELOG();
-	KL_PROCESS_ERROR(kbResult);
+	printf_s("%s ", szarrDatetime);
 	KL_VAOUTA(cszpText, szarrText);
 
-	sprintf_s(g_tKlSysLog.szarrLog, strlen(szarrText) + 1, "%s, %s %s%s\n", __DATE__, __TIME__,szpLevel, szarrText);
+	sprintf_s(g_tKlSysLog.szarrLog, MAX_ZPRINTF, "%s %s%s\n", szarrDatetime, szpLevel, szarrText);
 	g_tKlSysLog.kbIsPrintfFlag = KL_FALSE;
 
 	printf_s("\n");
