@@ -75,6 +75,9 @@
     <ClInclude Include="..\Classes\Header\KLcPyErrCode.h">
       <Filter>Header Files\KLcPy</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLcContainer.h">
+      <Filter>Header Files\KLcBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -92,14 +95,17 @@
     <ClCompile Include="..\Classes\KLcPy.c">
       <Filter>Source Files\KLcPy</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\KLcPyContainerLib.c">
-      <Filter>Source Files\KLcPy</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\KLcWin.c">
       <Filter>Source Files\KLcBase</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\KLcPyEvent.c">
       <Filter>Source Files\KLcPy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcThread.c">
+      <Filter>Source Files\KLcBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\KLcContainerLinkedList.c">
+      <Filter>Source Files\KLcBase</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@
 #include "KLog.h"
 #include "KBaseMacro.h"
 
-KL_DLLEXPORT KLcBool KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet)
+KL_DLLEXPORT void KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet)
 {
 	PyObject* pArgs = PyTuple_New(cnArgsCount);
 	

@@ -13,8 +13,6 @@
 
 typedef int KLcBool;
 typedef int KLpFnRet;
-
-
-
+#define KBOOLFN(fn)	KLcBool (*fn)
 
 #endif

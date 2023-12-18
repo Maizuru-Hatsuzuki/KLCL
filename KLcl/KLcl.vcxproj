@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="..\Classes\Header\KBase.h" />
     <ClInclude Include="..\Classes\Header\KBaseMacro.h" />
+    <ClInclude Include="..\Classes\Header\KLcContainer.h" />
     <ClInclude Include="..\Classes\Header\KLcFSM.h" />
     <ClInclude Include="..\Classes\Header\KLcLua.h" />
     <ClInclude Include="..\Classes\Header\KLcPy.h" />
@@ -179,9 +180,10 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Classes\KLcContainerLinkedList.c" />
     <ClCompile Include="..\Classes\KLcLua.c" />
-    <ClCompile Include="..\Classes\KLcPyContainerLib.c" />
     <ClCompile Include="..\Classes\KLcPyEvent.c" />
+    <ClCompile Include="..\Classes\KLcThread.c" />
     <ClCompile Include="..\Classes\KLcWin.c" />
     <ClCompile Include="..\Classes\KLog.c" />
     <ClCompile Include="..\Classes\KLcPy.c" />

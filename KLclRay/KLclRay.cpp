@@ -2,8 +2,6 @@
 #include "KLclRay.h"
 #include "KLqtMenu.h"
 #include "KLog.h"
-#include "KBaseMacro.h"
-#include <thread>
 
 
 KLclRay* KLclRay::m_pSelf;
@@ -26,6 +24,7 @@ KLclRay::~KLclRay()
 
 	klBool = KLpUninitPy3();
 	ASSERT(klBool);
+	KLwUninitShareMem(&m_tCorMemPyLog);
 }
 
 void KLclRay::ReInit()
@@ -49,6 +48,14 @@ void KLclRay::ReInit()
     KLLOG(KLOG_INFO, L"Init klp python success.");
 	klqUpdateSysLog();
 
+	m_tCorMemPyLog.wsMemName = WORKERNAME_W_PYLOG;
+	m_tCorMemPyLog.dwSize = sizeof(enum KLEM_SHAREMEMFLAGS);
+	klBool = KLwInitShareMem(&m_tCorMemPyLog);
+	ASSERT(klBool);
+
+	// Print python log thread.
+	_beginthread((_beginthread_proc_type)KLclRay::klqUpdateSysLogForPy, 0, (void*)this);
+
 Exit0:
 	return;
 }
@@ -60,6 +67,41 @@ KLclRay* KLclRay::getInstance()
         m_pSelf = new KLclRay();
     }
     return m_pSelf;
+}
+
+void KLclRay::klqUpdateSysLogForPy(void* _vp)
+{
+	KLcBool klBool					= KL_FALSE;
+	WCHAR wszarrLog[MAX_ZPRINTF]	= { 0 };
+	CHAR szarrLog[MAX_ZPRINTF]		= { 0 };
+	KLclRay* pThis					= (KLclRay*)_vp;
+	int nFlag						= KL_TRUE;
+	void* vpFlags					= malloc(sizeof(enum KLEM_SHAREMEMFLAGS));
+
+	while (true)
+	{
+		klBool = KLwGetShareMem(&(pThis->m_tCorMemPyLog), &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+		ASSERT(klBool);
+
+		switch (*(KLEM_SHAREMEMFLAGS*)vpFlags)
+		{
+		case KMSHARE_INIT:
+			pThis->klqUpdateSysLog();
+			KLwResetShareMem(&(pThis->m_tCorMemPyLog));
+			break;
+
+		case KMSHARE_EXIT:
+			goto Exit0;
+
+		default:
+			break;
+		}
+
+		Sleep(10);
+	}
+
+Exit0:
+	KL_RELEASE(vpFlags);
 }
 
 void KLclRay::klqUpdateSysLog()

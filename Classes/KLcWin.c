@@ -9,7 +9,7 @@
 #include "KLog.h"
 
 
-KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
+KL_DLLEXPORT KLcBool KLwInitShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc)
 {
 	KLcBool kbRet = KL_FALSE;
 	ptShareDesc->phShareMem = (PHANDLE)malloc(sizeof(HANDLE));
@@ -17,7 +17,7 @@ KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
 	ptShareDesc->ppvMemMapping = (LPVOID)malloc(sizeof(LPVOID));
 	KL_PROCESS_ERROR(ptShareDesc->ppvMemMapping);
 
-	*ptShareDesc->phShareMem = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(KLWPADDINGSHAREMEMDESC), ptShareDesc->wsMemName);
+	*ptShareDesc->phShareMem = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, ptShareDesc->dwSize, ptShareDesc->wsMemName);
 	if (ERROR_ALIAS_EXISTS == GetLastError())
 	{
 		*ptShareDesc->phShareMem = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, ptShareDesc->wsMemName);
@@ -27,9 +27,9 @@ KLcBool KLwInitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
 	{
 		KL_PROCESS_ERROR(*ptShareDesc->phShareMem);
 	}
-	KLLOG(KLOG_INFO, L"Create share memory success! phShareMem: %p.", *ptShareDesc->phShareMem);
+	KLLOG(KLOG_INFO, L"Create share memory success! phShareMem: %p. memory desc: %s, size: %llu.", *ptShareDesc->phShareMem, ptShareDesc->wsMemName, ptShareDesc->dwSize);
 
-	*ptShareDesc->ppvMemMapping = MapViewOfFile(*ptShareDesc->phShareMem, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(KLWPADDINGSHAREMEMDESC));
+	*ptShareDesc->ppvMemMapping = MapViewOfFile(*ptShareDesc->phShareMem, FILE_MAP_ALL_ACCESS, 0, 0, ptShareDesc->dwSize);
 	KL_PROCESS_ERROR(*ptShareDesc->ppvMemMapping);
 	KLLOG(KLOG_INFO, L"Map view success! pvMemMapping: %p.", *ptShareDesc->ppvMemMapping);
 
@@ -38,7 +38,7 @@ Exit0:
 	return kbRet;
 }
 
-KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
+KL_DLLEXPORT KLcBool KLwUninitShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc)
 {
 	KLcBool kbRet = KL_FALSE;
 	BOOL bFnRet = FALSE;
@@ -58,6 +58,46 @@ KLcBool KLwUninitShareMem(KLWSHAREMEMDESC_PTR ptShareDesc)
 
 Exit0:
 	return kbRet;
+}
+
+KL_DLLEXPORT KLcBool KLwGetShareMem(KLW_SHAREMEMDESC_PTR pSrc, void** ppvRet, DWORD dwSize)
+{
+	KLcBool klBool = KL_FALSE;
+	errno_t nErr = 0;
+
+	nErr = memcpy_s(*ppvRet, dwSize, *pSrc->ppvMemMapping, pSrc->dwSize);
+	KL_PROCESS_ERROR(0 == nErr);
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLwSetShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc, enum KLEM_SHAREMEMFLAGS emFlags)
+{
+	KLcBool klBool = KL_FALSE;
+	errno_t nErr = 0;
+
+	nErr = memcpy_s(*ptShareDesc->ppvMemMapping, ptShareDesc->dwSize, &emFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+	KL_PROCESS_ERROR(0 == nErr);
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLwResetShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc)
+{
+	KLcBool klBool = KL_FALSE;
+	errno_t nErr = 0;
+	enum KLEM_SHAREMEMFLAGS emZero = KMSHARE_ZERO;
+
+	nErr = memcpy_s(*ptShareDesc->ppvMemMapping, ptShareDesc->dwSize, &emZero, sizeof(enum KLEM_SHAREMEMFLAGS));
+	KL_PROCESS_ERROR(0 == nErr);
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
 }
 
 KL_DLLEXPORT KLcBool KLwGetWindowsProcessInfo(const WCHAR* cwszpProcess, PDWORD pdwPid)

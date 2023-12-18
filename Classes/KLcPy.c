@@ -7,7 +7,6 @@
 
 
 #include "KLcPy.h"
-#include "KLcWin.h"
 #include "KLog.h"
 #include "KBaseMacro.h"
 
@@ -27,6 +26,10 @@ KL_DLLEXPORT KLcBool KLpInitPy3()
 	klBool = Py_IsInitialized();
 	KLP_PROCESS_ERROR(klBool);
 
+	PyEval_InitThreads();
+	klBool = PyEval_ThreadsInitialized();
+	KLP_PROCESS_ERROR(klBool);
+
 	PyRun_SimpleString("import sys");
 	PyRun_SimpleString("sys.path.append('./Src')");
 
@@ -34,14 +37,15 @@ Exit0:
 	return klBool;
 }
 
-KL_DLLEXPORT KLcBool KLpUninitPy3(KLPPY3OBJECTLINKCONTAINERDATA_PTR pPy3ObjectData)
+KL_DLLEXPORT KLcBool KLpUninitPy3()
 {
 	KLcBool klBool = KL_FALSE;
 
 	klBool = Py_IsInitialized();
 	if (KL_TRUE == klBool)
 	{
-		Py_FinalizeEx();
+		klBool = Py_FinalizeEx();
+		KL_PROCESS_SUCCESS(-1 == klBool);
 	}
 
 	KLLOG(KLOG_INFO, L"Uninit klp python3 success!");
@@ -85,7 +89,8 @@ KL_DLLEXPORT KLcBool KLpGetLastError()
 		pErrstr = PyObject_Str(pExcValue);
 		szpLastErrMsg = PyUnicode_AsUTF8(pErrstr);
 
-		KPrettyPrintfA(KLOG_ERROR, "PY ERR -> %s", szpLastErrMsg);
+		klBool = KPrettyPrintfA(KLOG_ERROR, "PY ERR -> %s", szpLastErrMsg);
+		KL_PROCESS_ERROR(klBool);
 		KLpGetMatchingErrorCode(szpLastErrMsg);
 		klBool = KL_FALSE;
 	}
@@ -116,7 +121,7 @@ KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr)
 	return nMatching;
 }
 
-KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* pArgs, const char* cszpArgsFormat, PPYOBJECT* ppClassRet)
+KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT pArgs, const char* cszpArgsFormat, PPYOBJECT* ppClassRet)
 {
 	KLcBool klBool = KL_FALSE;
 	PPYOBJECT pClassConstruct = NULL;
@@ -128,8 +133,17 @@ KLcBool KLpExcutePy3ClassFn(PPYOBJECT pClass, const char* cszpFn, PPYOBJECT* pAr
 	pClassIns = PyObject_CallObject(pClassConstruct, NULL);
 	KLP_PROCESS_ERROR(pClassIns);
 
-	*ppClassRet = PyObject_CallMethod(pClassIns, cszpFn, cszpArgsFormat, pArgs);
-	KLP_PROCESS_ERROR(*ppClassRet);
+	if (NULL == cszpArgsFormat)
+	{
+		*ppClassRet = PyObject_CallMethod(pClassIns, cszpFn, NULL);
+		KLP_PROCESS_ERROR(*ppClassRet);
+	}
+	else
+	{
+		*ppClassRet = PyObject_CallMethod(pClassIns, cszpFn, cszpArgsFormat, pArgs);
+		KLP_PROCESS_ERROR(*ppClassRet);
+	}
+	
 
 	klBool = KL_TRUE;
 

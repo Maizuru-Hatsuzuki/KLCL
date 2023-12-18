@@ -5,19 +5,20 @@
 * Description	: qt menu logic.
 ********************************************************/
 
-#include <thread>
+
 #include "KLcPy.h"
 #include "KLqtMenu.h"
 #include "KBaseMacro.h"
 #include "KLog.h"
-
+#include "KLcContainer.h"
+#include <process.h>
 
 
 KLqBaseMenu* KLqBaseMenu::m_pSelf;
 
 KLqBaseMenu::KLqBaseMenu()
 {
-
+	KLcBool klBool = KL_FALSE;
 	m_pMenuBar = new QMenuBar();
 	// Menu bar.
 	m_pMenuNew			= KLQ_NEW(QMenu, "New");
@@ -41,6 +42,11 @@ KLqBaseMenu::KLqBaseMenu()
 
 	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionConnectPfEye);
 	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
+
+
+
+	klBool = ReInit();
+	ASSERT(klBool);
 }
 
 KLqBaseMenu::~KLqBaseMenu()
@@ -54,6 +60,32 @@ KLqBaseMenu::~KLqBaseMenu()
 	KLQ_RELEASE(m_pMenuNew);
 	KLQ_RELEASE(m_pMenuBar);
 	KLQ_RELEASE(m_pSelf);
+
+	KLcDestroySinglyCirLinkedList(m_pListPyWorker);
+	KLwUninitShareMem(&m_tCorMemPfeye);
+}
+
+KLqBool KLqBaseMenu::ReInit()
+{
+	KLcBool klBool = KL_FALSE;
+	m_tCorMemPfeye.wsMemName = WORKERNAME_W_PERFEYE;
+	m_tCorMemPfeye.dwSize = sizeof(enum KLEM_SHAREMEMFLAGS);
+	m_tPy3BreathPfeye = { KL_FALSE, WORKERNAME_W_PERFEYE, (LPKLTHREAD_WORKER_FN)KLqBaseMenu::kqThLaunchPfeye };
+
+	klBool = KLcCreateSinglyCirLinkedList(&m_pListPyWorker);
+	KL_PROCESS_ERROR(klBool);
+
+	klBool = KLwThCreateThreadPool(MAX_KP_THREAD, &m_pThPoolPyBreath);
+	ASSERT(klBool);
+
+	klBool = KLwInitShareMem(&m_tCorMemPfeye);
+	KL_PROCESS_ERROR(klBool);
+
+
+	klBool = KL_TRUE;
+Exit0:
+
+	return klBool;
 }
 
 KLqBaseMenu* KLqBaseMenu::getInstance()
@@ -71,51 +103,76 @@ PQMENUBAR KLqBaseMenu::getMenuBar()
 	return m_pMenuBar;
 }
 
-DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID vp, LPVOID _vp)
+void KLqBaseMenu::setThreadGIL(enum KLEM_PY3GILEVENT emEvent)
+{
+	switch (emEvent)
+	{
+	case KGIL_PERFEYE:
+		m_emGILPfeye = PyGILState_Ensure();
+		break;
+	default:
+		break;
+	}
+
+	return;
+}
+
+DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID _vp)
 {
 	KLcBool klBool = KL_FALSE;
-	PyGILState_STATE gState;
 	PPYOBJECT pArgs = (PPYOBJECT)_vp;
+	KLqBaseMenu::getInstance()->setThreadGIL(KGIL_PERFEYE);
 
-	gState = PyGILState_Ensure();
-	klBool = KLP_LAUNCHCF_WITHARGS_UMAIN("WizardUltra", "UAConnectPfeye", pArgs, "O");
-	ASSERT(klBool);
-	PyGILState_Release(gState);
+	// Python while will block here.
+	klBool = KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH("WizardUltra", "UAPfeye");
+	if (KL_TRUE == klBool)
+	{
+		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn success.");
+	}
+	else
+	{
+		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn failed.");
+	}
 	return klBool;
 }
 	
 KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
 {
-	KLcBool klBool = KL_FALSE;
-	DWORD dwTidPfeye = 0;
-	std::thread thPfEye;
-	PyThreadState* pPyThState = NULL;
-	PPYOBJECT pArgs = NULL;
-	const int cnarrArgs[1] = { 1 };
+	KLcBool klBool							= KL_FALSE;
+	DWORD dwTidPfeye						= 0;
+	PPYOBJECT pArgs							= NULL;
+	KLW_THREADWORKER_PTR ptWorker			= NULL;
+	KLCLINKEDLISTDATA_PTR ptWorkerRecord	= NULL;
+	PyThreadState* pPyThreadState			= NULL;
 
-	KLpGetPyTupleInt(1, cnarrArgs, &pArgs);
-	KL_PROCESS_ERROR(pArgs);
-	
-	KLQ_LOG(KLOG_INFO, L"Connecting perfeye.");
-
-	PyEval_InitThreads();
-	Py_BEGIN_ALLOW_THREADS
-		thPfEye = std::thread(KLqBaseMenu::kqThLaunchPfeye, this, pArgs);
-		thPfEye.join();
-		Sleep(2000);
-
-	if (NULL == m_hThPfEye)
+	if (KL_FALSE == m_tPy3BreathPfeye.nIsInit)
 	{
-		KLQ_LOG(KLOG_INFO, L"Connect perfeye failed.");
+		pPyThreadState = PyThreadState_Get();
+		klBool = KLwThCreateThreadWorker(L"[PY3 OnFrameBreathe] Perfeye", m_tPy3BreathPfeye.fn, NULL, &ptWorker);
+		KL_PROCESS_ERROR(klBool);
+		klBool = KLcCreateLinkedListData(KT_USERPTR, (void*)ptWorker, m_tPy3BreathPfeye.cwsDesc, &ptWorkerRecord);
+		KL_PROCESS_ERROR(klBool);
+		klBool = m_pListPyWorker->Append(m_pListPyWorker, ptWorkerRecord);
+		KL_PROCESS_ERROR(klBool);
+
+		KLQ_LOG(KLOG_INFO, L"Connecting perfeye breath fn.");
+		PyEval_ReleaseThread(pPyThreadState);
+		klBool = m_pThPoolPyBreath->AddWorker(m_pThPoolPyBreath, ptWorker);
+		KL_PROCESS_ERROR(klBool);
+
+		klBool = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_INIT);
+		KL_PROCESS_ERROR(klBool);
+
+		m_tPy3BreathPfeye.nIsInit = KL_TRUE;
 	}
 	else
 	{
-		KLQ_LOG(KLOG_INFO, L"Connect perfeye success.");
-		klBool = KL_TRUE;
+		KLQ_LOG(KLOG_WARING, L"Perfeye breath fn is running.");
 	}
-	Py_END_ALLOW_THREADS
 
+	klBool = KL_TRUE;
 Exit0:
+	
 	return klBool;
 }
 
@@ -124,12 +181,28 @@ KLqBool KLqBaseMenu::kqeOnActionDisconnectPfEye()
 	KLcBool klBool = KL_FALSE;
 	PPYOBJECT pArgs = NULL;
 	const int cnarrArgs[1] = { 0 };
+	unsigned int unPfeyeWorkerPos = 0;
 
-	KLpGetPyTupleInt(1, cnarrArgs, &pArgs);
-	KL_PROCESS_ERROR(pArgs);
+	if (KL_TRUE == m_tPy3BreathPfeye.nIsInit)
+	{
+		klBool = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_RELEASE);
+		KL_PROCESS_ERROR(klBool);
 
-	klBool = KLP_LAUNCHCF_WITHARGS_UMAIN("WizardUltra", "UAConnectPfeye", pArgs, "O");
-	KL_PROCESS_ERROR(klBool);
+		klBool = m_pListPyWorker->FindPos(m_pListPyWorker, NULL, WORKERNAME_W_PERFEYE, &unPfeyeWorkerPos);
+		KL_PROCESS_ERROR(klBool);
+
+		klBool = m_pListPyWorker->Remove(m_pListPyWorker, unPfeyeWorkerPos);
+		KL_PROCESS_ERROR(klBool);
+
+		KLqBaseMenu::getInstance()->setThreadGIL(KGIL_PERFEYE);
+		PyGILState_Release(m_emGILPfeye);
+
+		m_tPy3BreathPfeye.nIsInit = KL_FALSE;
+	}
+	else
+	{
+		KLQ_LOG(KLOG_WARING, L"Perfeye breath fn is not running.");
+	}
 
 	klBool = KL_TRUE;
 Exit0:

@@ -8,7 +8,7 @@
 #include "KLcWin.h"
 #include "KLog.h"
 
-extern KLWSHAREMEMDESC g_tKLwShareMemDesc;
+extern KLW_SHAREMEMDESC g_tKLwShareMemDesc;
 
 LUARETURN GetKLclVersionR(lua_State* L)
 {
@@ -49,8 +49,8 @@ LUARETURN SetKLclShareMemR(lua_State* L)
 		break;
 	}
 
-	memcpy_s(*g_tKLwShareMemDesc.ppvMemMapping, sizeof(KLWPADDINGSHAREMEMDESC), &emFSMStatus, sizeof(KLEM_FSMSTATUS));
-	KLLOG(KLOG_INFO, L"Write klcl memory: %d[%p], size of KLWSHAREMEMDESC: %d", emFSMStatus, &emFSMStatus, sizeof(KLWPADDINGSHAREMEMDESC));
+	memcpy_s(*g_tKLwShareMemDesc.ppvMemMapping, sizeof(KLW_PADDINGSHAREMEMDESC), &emFSMStatus, sizeof(KLEM_FSMSTATUS));
+	KLLOG(KLOG_INFO, L"Write klcl memory: %d[%p], size of KLWSHAREMEMDESC: %d", emFSMStatus, &emFSMStatus, sizeof(KLW_PADDINGSHAREMEMDESC));
 
 	return 0;
 }

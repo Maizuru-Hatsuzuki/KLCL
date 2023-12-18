@@ -4,7 +4,7 @@
 #include "KLog.h"
 #include "KBaseMacro.h"
 
-extern KLWSHAREMEMDESC g_tKLwShareMemDesc = { NULL, NULL, KLCL_SHAREMEMDESC };
+extern KLW_SHAREMEMDESC g_tKLwShareMemDesc = { NULL, NULL, KLCL_SHAREMEMDESC, sizeof(KLW_PADDINGSHAREMEMDESC) };
 UPDATELOGINFO g_tKlSysLog;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
