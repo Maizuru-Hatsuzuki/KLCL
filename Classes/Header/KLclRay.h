@@ -21,6 +21,7 @@
 #define KLQ_LOG(level, fmt, ...)	{ KLLOG(level, fmt, __VA_ARGS__); KLQ_UPDATELOG(); }
 
 #define MAX_KP_THREAD 10
+#define MAX_KTABLEROWFIELDS 6
 
 typedef int         KLqBool;
 typedef QTextEdit*  PQTEXTEDIT;
@@ -41,7 +42,8 @@ class KLclRay : public QMainWindow
 
 public:
 	static KLclRay* getInstance();
-	static void klqUpdateSysLogForPy(void* _vp);
+	static void KLqHeartbeat(void* _vp);
+	KLcBool klqUpdateSysLogForPy();
 	void klqUpdateSysLog();
     void klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText);
     void klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit);

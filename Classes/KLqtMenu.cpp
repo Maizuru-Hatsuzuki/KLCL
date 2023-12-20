@@ -18,8 +18,8 @@ KLqBaseMenu* KLqBaseMenu::m_pSelf;
 
 KLqBaseMenu::KLqBaseMenu()
 {
-	KLcBool klBool = KL_FALSE;
-	m_pMenuBar = new QMenuBar();
+	KLcBool klBool		= KL_FALSE;
+	m_pMenuBar			= new QMenuBar();
 	// Menu bar.
 	m_pMenuNew			= KLQ_NEW(QMenu, "New");
 	m_pMenuCollector	= KLQ_NEW(QMenu, "ATsumeru");
@@ -44,8 +44,7 @@ KLqBaseMenu::KLqBaseMenu()
 	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
 
 
-
-	klBool = ReInit();
+	klBool = reInit();
 	ASSERT(klBool);
 }
 
@@ -65,7 +64,7 @@ KLqBaseMenu::~KLqBaseMenu()
 	KLwUninitShareMem(&m_tCorMemPfeye);
 }
 
-KLqBool KLqBaseMenu::ReInit()
+KLqBool KLqBaseMenu::reInit()
 {
 	KLcBool klBool = KL_FALSE;
 	m_tCorMemPfeye.wsMemName = WORKERNAME_W_PERFEYE;
@@ -86,6 +85,11 @@ KLqBool KLqBaseMenu::ReInit()
 Exit0:
 
 	return klBool;
+}
+
+KLcBool KLqBaseMenu::initMenuWidget()
+{
+	return KL_TRUE;
 }
 
 KLqBaseMenu* KLqBaseMenu::getInstance()
@@ -124,7 +128,7 @@ DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID _vp)
 	KLqBaseMenu::getInstance()->setThreadGIL(KGIL_PERFEYE);
 
 	// Python while will block here.
-	klBool = KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH("WizardUltra", "UAPfeye");
+	klBool = KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH_NORET("WizardUltra", "UAPfeye");
 	if (KL_TRUE == klBool)
 	{
 		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn success.");
@@ -154,7 +158,7 @@ KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
 		KL_PROCESS_ERROR(klBool);
 		klBool = m_pListPyWorker->Append(m_pListPyWorker, ptWorkerRecord);
 		KL_PROCESS_ERROR(klBool);
-
+		
 		KLQ_LOG(KLOG_INFO, L"Connecting perfeye breath fn.");
 		PyEval_ReleaseThread(pPyThreadState);
 		klBool = m_pThPoolPyBreath->AddWorker(m_pThPoolPyBreath, ptWorker);

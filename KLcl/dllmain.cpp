@@ -4,19 +4,26 @@
 #include "KLog.h"
 #include "KBaseMacro.h"
 
-extern KLW_SHAREMEMDESC g_tKLwShareMemDesc = { NULL, NULL, KLCL_SHAREMEMDESC, sizeof(KLW_PADDINGSHAREMEMDESC) };
-UPDATELOGINFO g_tKlSysLog;
+KLW_SHAREMEMDESC g_tKLwShareMemDesc = { NULL, NULL, KLCL_SHAREMEMDESC, sizeof(KLW_PADDINGSHAREMEMDESC) };
+UPDATELOGINFO g_tKlSysLog = { 0 };
+KLW_CUSTOMSCRIPTDATAEXCHANGE_PTR g_arrpCustomDataExchagePChar[MAX_KCUSTOMDATAARRAY] = { 0 };
+
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
                      )
 {
+    KLcBool kbRet = KL_FALSE;
+
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
         g_tKlSysLog.kbIsPrintfFlag = KL_TRUE;
-        KLwInitShareMem(&g_tKLwShareMemDesc);
+        kbRet = KLwmInitCustomExchageArray();
+        KL_PROCESS_ERROR(kbRet);
+        kbRet = KLwInitShareMem(&g_tKLwShareMemDesc);
+        KL_PROCESS_ERROR(kbRet);
         break;
 
     case DLL_THREAD_ATTACH:
@@ -26,10 +33,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         break;
 
     case DLL_PROCESS_DETACH:
+        KLwmUninitCustomExchageArray();
         KLwUninitShareMem(&g_tKLwShareMemDesc);
         break;
     }
 
+    //ASSERT(kbRet);
+
+Exit0:
     return TRUE;
 }
 

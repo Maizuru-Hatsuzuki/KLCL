@@ -8,6 +8,36 @@
 #include "KLcWin.h"
 #include "KLog.h"
 
+KLcBool KLwmInitCustomExchageArray()
+{
+	KLcBool kbRet = KL_FALSE;
+	KLW_CUSTOMSCRIPTDATAEXCHANGE_PTR ptmp = NULL;
+
+	for (size_t i = 0; i < MAX_KCUSTOMDATAARRAY; i++)
+	{
+		ptmp = (KLW_CUSTOMSCRIPTDATAEXCHANGE_PTR)malloc(sizeof(KLW_CUSTOMSCRIPTDATAEXCHANGE));
+		KL_PROCESS_ERROR(ptmp);
+		g_arrpCustomDataExchagePChar[i] = ptmp;
+	}
+
+	kbRet = KL_TRUE;
+Exit0:
+	return kbRet;
+}
+
+KLcBool KLwmUninitCustomExchageArray()
+{
+	KLcBool kbRet = KL_FALSE;
+
+	for (size_t i = 0; i < MAX_KCUSTOMDATAARRAY; i++)
+	{
+		KL_RELEASE(g_arrpCustomDataExchagePChar[i]);
+	}
+
+	kbRet = KL_TRUE;
+Exit0:
+	return kbRet;
+}
 
 KL_DLLEXPORT KLcBool KLwInitShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc)
 {
@@ -71,6 +101,38 @@ KL_DLLEXPORT KLcBool KLwGetShareMem(KLW_SHAREMEMDESC_PTR pSrc, void** ppvRet, DW
 	klBool = KL_TRUE;
 Exit0:
 	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLwGetCustomScriptDataExchage(unsigned int unTagPos, KLW_CUSTOMSCRIPTDATAEXCHANGE_PTR* ppRet)
+{
+	KLcBool klBool = KL_FALSE;
+
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLwSetCustomScriptDataExchagePChar(char** arrszpCustomData, unsigned int unLen, unsigned int unTagPos)
+{
+	KLcBool klBool = KL_FALSE;
+	KLW_CUSTOMSCRIPTDATAEXCHANGE_PTR punRet = g_arrpCustomDataExchagePChar[unTagPos];
+	KL_PROCESS_ERROR(punRet);
+	KL_PROCESS_ERROR(unLen < MAX_KCUSTOMDATA);
+
+	for (size_t i = 0; i < unLen; i++)
+	{
+		punRet->arrszpCustomData[i] = arrszpCustomData[i];
+	}
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}
+
+KL_DLLEXPORT KLcBool KLwSetCustomScriptDataExchageInt()
+{
+
 }
 
 KL_DLLEXPORT KLcBool KLwSetShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc, enum KLEM_SHAREMEMFLAGS emFlags)

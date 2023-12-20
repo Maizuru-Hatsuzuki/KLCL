@@ -3,6 +3,7 @@
 
 #include "KLcContainer.h"
 
-#define KQSCALING_BOTTOMLEFT 0.01
+#define KQSCALING_BOTTOMLEFT	0.01
+#define KQSCALING_TOPLEFT		1 - KQSCALING_BOTTOMLEFT
 
 #endif

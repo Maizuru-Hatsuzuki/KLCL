@@ -1,6 +1,7 @@
 #include "KLcPy.h"
 #include "KLclRay.h"
 #include "KLqtMenu.h"
+#include "KLqtTable.h"
 #include "KLog.h"
 
 
@@ -35,14 +36,18 @@ void KLclRay::ReInit()
 	m_fWindowWidth = this->geometry().width();
 	m_pQHLayoutBase = new QHBoxLayout;
 	m_pQHLayoutBottom = new QHBoxLayout;
+	setLayout(m_pQHLayoutBase);
 
 	this->setMenuBar(KLqBaseMenu::getInstance()->getMenuBar());
+	
+	KLqBaseTable::getInstance()->initTableWidget(m_fWindowHeight, m_fWindowWidth);
+	KLqBaseTable::getInstance()->m_pTableWidget->setParent(this);
+	m_pQHLayoutBase->addWidget(KLqBaseTable::getInstance()->m_pTableWidget);
 
 	klqCreateTextEdit(&m_pQTKLLog);
 	ASSERT(m_pQTKLLog);
 	m_pQHLayoutBase->addWidget(m_pQTKLLog);
-	setLayout(m_pQHLayoutBase);
-
+	
 	klBool = KLpInitPy3();
 	ASSERT(klBool);
     KLLOG(KLOG_INFO, L"Init klp python success.");
@@ -54,7 +59,7 @@ void KLclRay::ReInit()
 	ASSERT(klBool);
 
 	// Print python log thread.
-	_beginthread((_beginthread_proc_type)KLclRay::klqUpdateSysLogForPy, 0, (void*)this);
+	_beginthread((_beginthread_proc_type)KLclRay::KLqHeartbeat, 0, (void*)this);
 
 Exit0:
 	return;
@@ -69,25 +74,40 @@ KLclRay* KLclRay::getInstance()
     return m_pSelf;
 }
 
-void KLclRay::klqUpdateSysLogForPy(void* _vp)
+void KLclRay::KLqHeartbeat(void* _vp)
+{
+	KLcBool klBool = KL_FALSE;
+	KLclRay* pThis = (KLclRay*)_vp;
+
+	PyEval_ReleaseThread(PyThreadState_Get());
+	klBool = pThis->klqUpdateSysLogForPy();
+	ASSERT(klBool);
+
+	//klBool = KLqBaseTable::getInstance()->getTableItem();
+	//ASSERT(klBool);
+
+	return;
+}
+
+KLcBool KLclRay::klqUpdateSysLogForPy()
 {
 	KLcBool klBool					= KL_FALSE;
 	WCHAR wszarrLog[MAX_ZPRINTF]	= { 0 };
 	CHAR szarrLog[MAX_ZPRINTF]		= { 0 };
-	KLclRay* pThis					= (KLclRay*)_vp;
 	int nFlag						= KL_TRUE;
 	void* vpFlags					= malloc(sizeof(enum KLEM_SHAREMEMFLAGS));
 
 	while (true)
 	{
-		klBool = KLwGetShareMem(&(pThis->m_tCorMemPyLog), &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
-		ASSERT(klBool);
+		klBool = KLwGetShareMem(&m_tCorMemPyLog, &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+		KL_PROCESS_ERROR(klBool);
 
 		switch (*(KLEM_SHAREMEMFLAGS*)vpFlags)
 		{
 		case KMSHARE_INIT:
-			pThis->klqUpdateSysLog();
-			KLwResetShareMem(&(pThis->m_tCorMemPyLog));
+			klqUpdateSysLog();
+			klBool = KLwResetShareMem(&m_tCorMemPyLog);
+			KL_PROCESS_ERROR(klBool);
 			break;
 
 		case KMSHARE_EXIT:
@@ -102,6 +122,7 @@ void KLclRay::klqUpdateSysLogForPy(void* _vp)
 
 Exit0:
 	KL_RELEASE(vpFlags);
+	return klBool;
 }
 
 void KLclRay::klqUpdateSysLog()
@@ -134,6 +155,8 @@ void KLclRay::klqCreateTextEdit(PQTEXTEDIT* ppQTextEdit)
     (*ppQTextEdit)->setGeometry(m_fWindowWidth * KQSCALING_BOTTOMLEFT, m_fWindowHeight * 0.65, m_fWindowWidth * (1 - KQSCALING_BOTTOMLEFT * 2), m_fWindowHeight * 0.3);
     (*ppQTextEdit)->setStyleSheet("QLabel{background-color:rgb(255, 255, 255)}");
     (*ppQTextEdit)->setReadOnly(true);
+
+	return;
 }
 
 void KLclRay::klqUpdateText(PQTEXTEDIT pTextEdit, const char* cszpText)

@@ -27,16 +27,12 @@ class KLqBaseMenu:
 public:
 	PQMENUBAR getMenuBar();
 	static KLqBaseMenu* getInstance();
-
+	KLcBool initMenuWidget();
 	void setThreadGIL(enum KLEM_PY3GILEVENT emEvent);
 
 public slots:
 	KLcBool kqeOnActionConnectPfEye();
 	KLcBool kqeOnActionDisconnectPfEye();
-
-public:
-	
-
 
 private:
 	KLqBaseMenu();
@@ -44,16 +40,12 @@ private:
 	KLqBaseMenu(const KLqBaseMenu& pSelf);
 	const KLqBaseMenu& operator=(const KLqBaseMenu& pSelf);
 
-	KLqBool ReInit();
+	KLqBool reInit();
 
-	static DWORD WINAPI kqThLaunchPfeye(LPVOID _vp);
-	
+	static DWORD WINAPI kqThLaunchPfeye(LPVOID _vp);	
 
 private:
-	static KLqBaseMenu* m_pSelf;
-	KLW_THREADWORKPOOL_PTR m_pThPoolPyBreath;
-	KLC_SCLIST m_pListPyWorker;
-
+	// Qt.
 	// Menu -> QMenuBar
 	PQMENUBAR m_pMenuBar;
 
@@ -70,8 +62,11 @@ private:
 	PQACTION m_pAcPerfeyeConnect;
 	PQACTION m_pAcPerfeyeDisconnect;
 
-
 private:
+	static KLqBaseMenu* m_pSelf;
+	KLW_THREADWORKPOOL_PTR m_pThPoolPyBreath;
+	KLC_SCLIST m_pListPyWorker;
+
 	// Perfeye variable.
 	PyGILState_STATE			m_emGILPfeye;
 	KLW_SHAREMEMDESC			m_tCorMemPfeye;
