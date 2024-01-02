@@ -103,6 +103,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX64|x64'">
     <IncludePath>$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\bin</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX86|Win32'">
   </PropertyGroup>
@@ -120,11 +121,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseX64|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\bin;$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>KLclX64.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugX64|x64'">
@@ -132,7 +133,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>KLclX64D.lib;python37_d.lib;Engine_Lua5X64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>KLclX64D.lib;python37_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\bin_d;$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -159,7 +160,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseX86|Win32'" Label="Configuration">

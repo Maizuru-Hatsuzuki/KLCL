@@ -1,5 +1,4 @@
 #include "KLog.h"
-#include <time.h>
 
 
 KL_DLLEXPORT KLcBool KPrettyPrintfW(enum KLEM_LOGLEVEL emLevel, LPCWSTR cwszpText, ...)

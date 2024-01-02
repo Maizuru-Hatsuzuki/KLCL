@@ -9,7 +9,7 @@
 #include "KBaseMacro.h"
 
 
-KLcBool KLcSingCirLinkedListNodeAppend(KLCSINGCIRLINKEDLIST_PTR pThis, KLCLINKEDLISTDATA_PTR pData)
+KLcBool KLclSingCirLinkedListNodeAppend(KLCSINGCIRLINKEDLIST_PTR pThis, KLCLINKEDLISTDATA_PTR pData)
 {
 	KLcBool klBool = KL_FALSE;
 	KLCSINGCIRLINKEDLIST_PTR ptAddNode = (KLCSINGCIRLINKEDLIST_PTR)malloc(sizeof(KLCSINGCIRLINKEDLIST));
@@ -24,14 +24,14 @@ KLcBool KLcSingCirLinkedListNodeAppend(KLCSINGCIRLINKEDLIST_PTR pThis, KLCLINKED
 	pThis->ptTailNode = ptAddNode;
 	pThis->unCount++;
 
-	KLcSingCirLinkedListNodeInitFn(ptAddNode);
+	KLclSingCirLinkedListNodeInitFn(ptAddNode);
 
 	klBool = KL_TRUE;
 Exit0:
 	return klBool;
 }
 
-KLcBool KLcSingCirLinkedListNodeRemove(KLCSINGCIRLINKEDLIST_PTR pThis, unsigned int unPos)
+KLcBool KLclSingCirLinkedListNodeRemove(KLCSINGCIRLINKEDLIST_PTR pThis, unsigned int unPos)
 {
 	KLcBool klBool = KL_FALSE;
 	KLCSINGCIRLINKEDLIST_PTR ptmpTagNode = NULL;
@@ -54,7 +54,7 @@ KLcBool KLcSingCirLinkedListNodeRemove(KLCSINGCIRLINKEDLIST_PTR pThis, unsigned 
 		ptmpTagPreNode->ptNext = pThis;
 		ptmpTagPreNode->ptTailNode = ptmpTagPreNode;
 
-		KLcDestroyLinkedListData(ptmpTagNode->pData);
+		KLclDestroyLinkedListData(ptmpTagNode->pData);
 		KL_RELEASE(ptmpTagNode);
 		pThis->unCount--;
 	}
@@ -64,7 +64,7 @@ KLcBool KLcSingCirLinkedListNodeRemove(KLCSINGCIRLINKEDLIST_PTR pThis, unsigned 
 		ptmpTagNode = ptmpTagPreNode->ptNext;
 		ptmpTagPreNode->ptNext = ptmpTagNode->ptNext;
 
-		KLcDestroyLinkedListData(ptmpTagNode->pData);
+		KLclDestroyLinkedListData(ptmpTagNode->pData);
 		KL_RELEASE(ptmpTagNode);
 		pThis->unCount--;
 	}
@@ -74,7 +74,7 @@ Exit0:
 	return klBool;
 }
 
-KLcBool KLcSingCirLinkedListNodeFindPos(KLCSINGCIRLINKEDLIST_PTR pThis, KLCLINKEDLISTDATA_PTR pData, LPCWSTR cwsTag, unsigned int* punRet)
+KLcBool KLclSingCirLinkedListNodeFindPos(KLCSINGCIRLINKEDLIST_PTR pThis, KLCLINKEDLISTDATA_PTR pData, LPCWSTR cwsTag, unsigned int* punRet)
 {
 	KLcBool klBool = KL_FALSE;
 	KLCSINGCIRLINKEDLIST_PTR ptmpTagNode = pThis;
@@ -105,15 +105,15 @@ Exit0:
 	return klBool;
 }
 
-void KLcSingCirLinkedListNodeInitFn(KLCSINGCIRLINKEDLIST_PTR pThis)
+void KLclSingCirLinkedListNodeInitFn(KLCSINGCIRLINKEDLIST_PTR pThis)
 {
-	pThis->Append = KLcSingCirLinkedListNodeAppend;
-	pThis->Remove = KLcSingCirLinkedListNodeRemove;
-	pThis->FindPos = KLcSingCirLinkedListNodeFindPos;
+	pThis->Append = KLclSingCirLinkedListNodeAppend;
+	pThis->Remove = KLclSingCirLinkedListNodeRemove;
+	pThis->FindPos = KLclSingCirLinkedListNodeFindPos;
 	return;
 }
 
-KL_DLLEXPORT KLcBool KLcCreateSinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR* ppRet)
+KL_DLLEXPORT KLcBool KLclCreateSinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR* ppRet)
 {
 	KLcBool klBool = KL_FALSE;
 	KLCSINGCIRLINKEDLIST_PTR pRet = (KLCSINGCIRLINKEDLIST_PTR)malloc(sizeof(KLCSINGCIRLINKEDLIST));
@@ -125,7 +125,7 @@ KL_DLLEXPORT KLcBool KLcCreateSinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR* ppRe
 	pRet->ptTailNode->ptNext	= pRet->ptHeadNode;
 	pRet->ptNext				= pRet;
 	pRet->pData					= NULL;
-	KLcSingCirLinkedListNodeInitFn(pRet);
+	KLclSingCirLinkedListNodeInitFn(pRet);
 
 	*ppRet = pRet;
 
@@ -134,7 +134,7 @@ Exit0:
 	return klBool;
 }
 
-KL_DLLEXPORT KLcBool KLcCreateLinkedListData(enum KLEM_GENERICS emType, void* vpData, LPCWSTR cwsWorkerName, KLCLINKEDLISTDATA_PTR* ppRet)
+KL_DLLEXPORT KLcBool KLclCreateLinkedListData(enum KLEM_GENERICS emType, void* vpData, LPCWSTR cwsWorkerName, KLCLINKEDLISTDATA_PTR* ppRet)
 {
 	KLcBool klBool = KL_FALSE;
 	KLCLINKEDLISTDATA_PTR pRet = (KLCLINKEDLISTDATA_PTR)malloc(sizeof(KLCLINKEDLISTDATA));
@@ -150,7 +150,7 @@ Exit0:
 	return klBool;
 }
 
-KL_DLLEXPORT void KLcDestroySinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR pList)
+KL_DLLEXPORT void KLclDestroySinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR pList)
 {
 	// First node, while from here.
 	KLCSINGCIRLINKEDLIST_PTR ptmpList = pList->ptNext;
@@ -162,7 +162,7 @@ KL_DLLEXPORT void KLcDestroySinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR pList)
 	{
 		ptmpTagNode = ptmpList;
 		ptmpList = ptmpTagNode->ptNext;
-		KLcDestroyLinkedListData(ptmpList->pData);
+		KLclDestroyLinkedListData(ptmpList->pData);
 		KL_RELEASE(ptmpTagNode);
 		pList->unCount--;
 	}
@@ -172,7 +172,7 @@ KL_DLLEXPORT void KLcDestroySinglyCirLinkedList(KLCSINGCIRLINKEDLIST_PTR pList)
 	return;
 }
 
-KL_DLLEXPORT void KLcDestroyLinkedListData(KLCLINKEDLISTDATA_PTR pData)
+KL_DLLEXPORT void KLclDestroyLinkedListData(KLCLINKEDLISTDATA_PTR pData)
 {
 	KL_RELEASE(pData->vpData);
 	KL_RELEASE(pData);

@@ -19,6 +19,7 @@
 #define KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH_NORET(cszpModule, cszpClass)					KLpLaunchClassFn(cszpModule, cszpClass, "OnFrameBreath", NULL, NULL, NULL)
 #define KLP_LAUNCHF_UMAIN_NORET(cszpModule)													KLpLaunchFn(cszpModule, "UMain", NULL, NULL)
 #define KLP_CREATETHREAD_GET_GIL															PyGILState_STATE k = PyGILState_Ensure()
+#define KLP_RELEASETHREAD_GIL																PyGILState_Release(k)
 
 
 enum KLEM_PYRETTYPE
@@ -55,6 +56,7 @@ extern "C" {
 	KL_DLLEXPORT KLcBool KLpAnalyzeRet(PPYOBJECT pFnRet, __int64* pllRetCount, ...);
 	KL_DLLEXPORT KLcBool KLpAnalyzeRetToLong(PPYOBJECT* arrpAnalyzeRet, __int64 llRetCount, long* arrlRet);
 	KL_DLLEXPORT KLcBool KLpAnalyzeRetToPChar(PPYOBJECT* arrpAnalyzeRet, __int64 llRetCount, char** arrpRet);
+	KL_DLLEXPORT KLcBool KLpAnalyzeRetTupleToPChar(PPYOBJECT pRetTuple, char** arrpRet);
 	KL_DLLEXPORT KLcBool KLpGetLastError();
 	KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr);
 	KL_DLLEXPORT void KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet);

@@ -31,28 +31,38 @@ KLqBaseTable* KLqBaseTable::getInstance()
 	return m_pSelf;
 }
 
-void debugKK()
+KLcBool KLqBaseTable::getTableItem()
 {
 	KLP_CREATETHREAD_GET_GIL;
+	KLcBool klBool = KL_FALSE;
 	PPYOBJECT ret = NULL;
 	PPYOBJECT ck = NULL;
 	PPYOBJECT yk = NULL;
 	PPYOBJECT arrpyRet[2] = { 0 };
 	__int64 llCount = 0;
-	long arrlRet[2] = { 0 };
-	char* arrszpRet[2] = { 0 };
-	KLpLaunchClassFn("WizardUltra", "UAPfeye", "getDevicesInfo", NULL, NULL, &ret);
+	char* arrszpRet[4] = { 0 };
+	KLpLaunchClassFn("R3Nexus", "UAPfeye", "getDevicesInfo", NULL, NULL, &ret);
 	KL_PROCESS_ERROR(ret);
 
 	KLpAnalyzeRet(ret, &llCount, &arrpyRet[0], &arrpyRet[1]);
-	/*KLpAnalyzeRetToLong(arrpyRet, llCount, arrlRet);
-	printf("%ld, %ld\n", arrlRet[0], arrlRet[1]);*/
+	for (size_t i = 0; i < llCount; i++)
+	{
+		if (1 > i)
+		{
+			klBool = KLpAnalyzeRetTupleToPChar(arrpyRet[i], arrszpRet);
+			KL_PROCESS_ERROR(klBool);
+		}
+		else
+		{
+			klBool = KLpAnalyzeRetTupleToPChar(arrpyRet[i], arrszpRet + 2);
+			KL_PROCESS_ERROR(klBool);
+		}
+	}
 
-	KLpAnalyzeRetToPChar(arrpyRet, llCount, arrszpRet);
-	printf("%s, %s\n", arrszpRet[0], arrszpRet[1]);
-
+	KLP_RELEASETHREAD_GIL;
+	klBool = KL_TRUE;
 Exit0:
-	return;
+	return klBool;
 }
 
 

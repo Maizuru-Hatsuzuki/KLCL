@@ -11,9 +11,6 @@
 #define KL_FALSE 0
 #define KLP_FALSE -1
 #define KL_TRUE  1
-#define MAX_ADBCMD 1024
-#define MAX_ZPRINTF 1024
-#define MAX_CMDRET 10240
 
 #define ASSERT(Condition)	if (!(Condition)) __debugbreak()
 #define KL_MALLOC(ptrType)	(ptrType*)malloc(sizeof(ptrType))
@@ -63,4 +60,4 @@ do											\
 
 
 
-#endif // !__Z1_BASEMACRO_H__
+#endif // !__KBASEMACRO_H__

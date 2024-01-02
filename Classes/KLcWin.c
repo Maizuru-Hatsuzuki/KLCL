@@ -130,9 +130,46 @@ Exit0:
 	return klBool;
 }
 
+void KLwSetPCharBackslash(char* szpText)
+{
+	int n = 0;
+	int nLen = strlen(szpText);
+
+	while (n < nLen)
+	{
+		if ('\\' == * szpText)
+		{
+			*szpText = '/';
+		}
+		szpText++;
+		n++;
+	}
+}
+
+void KLwGetSimpleHash(const char* szpSrc, unsigned int unLen, unsigned int* punRet)
+{
+	unsigned int unHash = 20240102;
+	for (size_t i = 0; i < unLen; i++)
+	{
+		unHash ^= ((unHash << 5) + (*szpSrc) + (unHash >> 2));
+	}
+	*punRet = unHash;
+}
+
+void KLwDecToHex(const int cnSrc, int* pnDst)
+{
+	
+}
+
+void KLwRandomNum(const int cnMax, int* pnRet)
+{
+	*pnRet = rand() % (cnMax + 1);
+	return;
+}
+
 KL_DLLEXPORT KLcBool KLwSetCustomScriptDataExchageInt()
 {
-
+	return KL_TRUE;
 }
 
 KL_DLLEXPORT KLcBool KLwSetShareMem(KLW_SHAREMEMDESC_PTR ptShareDesc, enum KLEM_SHAREMEMFLAGS emFlags)
@@ -191,3 +228,4 @@ KL_DLLEXPORT KLcBool KLwGetWindowsProcessInfo(const WCHAR* cwszpProcess, PDWORD 
 Exit0:
 	return klBool;
 }
+

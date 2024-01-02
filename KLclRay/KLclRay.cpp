@@ -58,6 +58,8 @@ void KLclRay::ReInit()
 	klBool = KLwInitShareMem(&m_tCorMemPyLog);
 	ASSERT(klBool);
 
+	KLP_LAUNCHF_UMAIN_NORET("R2Vigilante");
+
 	// Print python log thread.
 	_beginthread((_beginthread_proc_type)KLclRay::KLqHeartbeat, 0, (void*)this);
 
@@ -79,12 +81,19 @@ void KLclRay::KLqHeartbeat(void* _vp)
 	KLcBool klBool = KL_FALSE;
 	KLclRay* pThis = (KLclRay*)_vp;
 
+	// Init thread, so don't need _PyThreadState_UncheckedGet.
 	PyEval_ReleaseThread(PyThreadState_Get());
-	klBool = pThis->klqUpdateSysLogForPy();
-	ASSERT(klBool);
 
-	//klBool = KLqBaseTable::getInstance()->getTableItem();
-	//ASSERT(klBool);
+	while (true)
+	{
+		klBool = pThis->klqUpdateSysLogForPy();
+		ASSERT(klBool);
+
+		klBool = KLqBaseTable::getInstance()->getTableItem();
+		ASSERT(klBool);
+
+		Sleep(10);
+	}
 
 	return;
 }
@@ -97,27 +106,22 @@ KLcBool KLclRay::klqUpdateSysLogForPy()
 	int nFlag						= KL_TRUE;
 	void* vpFlags					= malloc(sizeof(enum KLEM_SHAREMEMFLAGS));
 
-	while (true)
+	klBool = KLwGetShareMem(&m_tCorMemPyLog, &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+	KL_PROCESS_ERROR(klBool);
+
+	switch (*(KLEM_SHAREMEMFLAGS*)vpFlags)
 	{
-		klBool = KLwGetShareMem(&m_tCorMemPyLog, &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+	case KMSHARE_INIT:
+		klqUpdateSysLog();
+		klBool = KLwResetShareMem(&m_tCorMemPyLog);
 		KL_PROCESS_ERROR(klBool);
+		break;
 
-		switch (*(KLEM_SHAREMEMFLAGS*)vpFlags)
-		{
-		case KMSHARE_INIT:
-			klqUpdateSysLog();
-			klBool = KLwResetShareMem(&m_tCorMemPyLog);
-			KL_PROCESS_ERROR(klBool);
-			break;
+	case KMSHARE_EXIT:
+		goto Exit0;
 
-		case KMSHARE_EXIT:
-			goto Exit0;
-
-		default:
-			break;
-		}
-
-		Sleep(10);
+	default:
+		break;
 	}
 
 Exit0:

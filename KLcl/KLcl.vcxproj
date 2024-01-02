@@ -89,6 +89,7 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)X64</TargetName>
+    <OutDir>$(SolutionDir)$(Platform)\bin</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -153,7 +154,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Classes\Header\Py3Header;$(SolutionDir)Classes\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -163,7 +164,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)Resources\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;python3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Engine_Lua5X64.lib;KGUIX64.lib;lua5.1.lib;python37.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -182,6 +183,7 @@
   <ItemGroup>
     <ClCompile Include="..\Classes\KLcContainerLinkedList.c" />
     <ClCompile Include="..\Classes\KLcLua.c" />
+    <ClCompile Include="..\Classes\KLcContainerMap.c" />
     <ClCompile Include="..\Classes\KLcPyEvent.c" />
     <ClCompile Include="..\Classes\KLcThread.c" />
     <ClCompile Include="..\Classes\KLcWin.c" />

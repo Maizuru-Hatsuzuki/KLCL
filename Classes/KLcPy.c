@@ -9,31 +9,54 @@
 #include "KLcPy.h"
 #include "KLog.h"
 #include "KBaseMacro.h"
-
+#include <stdlib.h>
 
 g_emLastErrCode = KLEM_ERR_NONE;
 
 KL_DLLEXPORT KLcBool KLpInitPy3()
 {
 	KLcBool klBool = KL_FALSE;
-	WCHAR wszarrPyPath[MAX_PATH] = { 0 };
+	PyObject* pSysPath = NULL;
+	PyObject* pPath = NULL;
+	WCHAR wszarrPyPath[MAX_PATH]		= { 0 };
+	WCHAR wszarrPyFullPath[MAX_PATH]	= { 0 };
+	char szarrPyScriptSrcPath[MAX_PATH] = { 0 };
+	char szarrSysAppend[MAX_PATH + 19]	= { 0 };
 
 	klBool = GetPrivateProfileString(L"KLcPy", L"szPythonPath", NULL, wszarrPyPath, MAX_PATH, L".\\config.ini");
-	KLP_PROCESS_ERROR(klBool);
+	KL_PROCESS_ERROR(klBool);
 
-	Py_SetPythonHome(wszarrPyPath);
+	_wfullpath(wszarrPyFullPath, wszarrPyPath, MAX_PATH);
+	_fullpath(szarrPyScriptSrcPath, "Src", MAX_PATH);
+	KLwSetPCharBackslash(szarrPyScriptSrcPath);
+
+	Py_SetPythonHome(wszarrPyFullPath);
 	Py_Initialize();
 	klBool = Py_IsInitialized();
 	KLP_PROCESS_ERROR(klBool);
 
+	pSysPath = PySys_GetObject("path");
+	if (NULL == pSysPath || !PyList_Check(pSysPath))
+	{
+		goto Exit0;
+	}
+	pPath = PyUnicode_FromString(szarrPyScriptSrcPath);
+	PyList_Insert(pSysPath, 0, pPath);
+
 	PyEval_InitThreads();
 	klBool = PyEval_ThreadsInitialized();
 	KLP_PROCESS_ERROR(klBool);
-
+	
+#ifdef KLP_DEBUG_FLAG
 	PyRun_SimpleString("import sys");
-	PyRun_SimpleString("sys.path.append('./Src')");
+	PyRun_SimpleString("for i in sys.path: print(i)");
+#endif
 
 Exit0:
+	if (NULL != pPath)
+	{
+		Py_DECREF(pPath);
+	}
 	return klBool;
 }
 

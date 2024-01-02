@@ -107,6 +107,9 @@
     <ClCompile Include="..\Classes\KLcContainerLinkedList.c">
       <Filter>Source Files\KLcBase</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\KLcContainerMap.c">
+      <Filter>Source Files\KLcBase</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\bin_d\config.ini">

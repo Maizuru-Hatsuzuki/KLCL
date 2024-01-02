@@ -4,16 +4,20 @@
     <LocalDebuggerWorkingDirectory>$(SolutionDir)$(Platform)\bin_d</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseX64|x64'">
+    <LocalDebuggerWorkingDirectory>$(SolutionDir)$(Platform)\bin</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='ReleaseX64|x64'">
-    <QtLastBackgroundBuild>2023-12-19T10:24:48.6480432Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2023-12-22T01:47:23.7786951Z</QtLastBackgroundBuild>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='ReleaseX86|Win32'">
-    <QtLastBackgroundBuild>2023-12-19T10:24:48.9532270Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2023-12-22T01:47:24.0519656Z</QtLastBackgroundBuild>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='DebugX86|Win32'">
-    <QtLastBackgroundBuild>2023-12-19T10:24:49.1227735Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2023-12-22T01:47:24.8258939Z</QtLastBackgroundBuild>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='DebugX64|x64'">
-    <QtLastBackgroundBuild>2023-12-19T10:24:49.3391951Z</QtLastBackgroundBuild>
+    <QtLastBackgroundBuild>2023-12-22T01:47:30.1985254Z</QtLastBackgroundBuild>
   </PropertyGroup>
 </Project>

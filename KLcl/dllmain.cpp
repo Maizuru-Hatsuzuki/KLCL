@@ -20,10 +20,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         g_tKlSysLog.kbIsPrintfFlag = KL_TRUE;
+
         kbRet = KLwmInitCustomExchageArray();
         KL_PROCESS_ERROR(kbRet);
         kbRet = KLwInitShareMem(&g_tKLwShareMemDesc);
         KL_PROCESS_ERROR(kbRet);
+
+        srand((unsigned)time(NULL));
+
         break;
 
     case DLL_THREAD_ATTACH:

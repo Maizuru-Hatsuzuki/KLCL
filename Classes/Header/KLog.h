@@ -37,7 +37,6 @@ do										\
 #endif
 
 
-
 enum KLEM_LOGLEVEL
 {
 	KLOG_DEBUG,

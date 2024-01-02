@@ -15,8 +15,7 @@
 #include <process.h>
 
 
-#define MAX_KCUSTOMDATA 10
-#define MAX_KCUSTOMDATAARRAY 5
+#define KCAST(t, exp)		((t)(exp))
 
 enum KLEM_SHAREMEMFLAGS
 {
@@ -97,6 +96,11 @@ KLcBool KLwThAddWorker(KLW_THREADWORKPOOL_PTR pThis, KLW_THREADWORKER_PTR pWorke
 KLcBool KLwThDestroyWorker(KLW_THREADWORKPOOL_PTR pThis, KLW_THREADWORKER_PTR pWorker);
 KLcBool KLwmInitCustomExchageArray();
 KLcBool KLwmUninitCustomExchageArray();
+
+void KLwSetPCharBackslash(char* szpText);
+void KLwGetSimpleHash(const char* szpSrc, unsigned int unLen, unsigned int* punRet);
+void KLwDecToHex(const int cnSrc, int* pnDst);
+void KLwRandomNum(const int cnMax, int* pnRet);
 
 #ifdef __cplusplus
 extern "C" {

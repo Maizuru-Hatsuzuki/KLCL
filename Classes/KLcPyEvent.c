@@ -90,6 +90,29 @@ Exit0:
 	return klBool;
 }
 
+KL_DLLEXPORT KLcBool KLpAnalyzeRetTupleToPChar(PPYOBJECT pRetTuple, char** arrpRet)
+{
+	KLcBool klBool = KL_FALSE;
+	DWORD dwSize = 0;
+	PPYOBJECT ptmpTag = NULL;
+
+	klBool = PyTuple_Check(pRetTuple);
+	KL_PROCESS_ERROR(klBool);
+
+	dwSize = PyTuple_Size(pRetTuple);
+
+	for (size_t i = 0; i < dwSize; i++)
+	{
+		ptmpTag = PyTuple_GetItem(pRetTuple, i);
+		arrpRet[i] = PyUnicode_AsUTF8(ptmpTag);
+	}
+
+	klBool = KL_TRUE;
+	
+Exit0:
+	return klBool;
+}
+
 KL_DLLEXPORT KLcBool KLpLaunchClassFn(
 	const char* cszpModule, const char* cszpClass, const char* cszpFn, PPYOBJECT pArgs, const char* cszpArgsFormat, PPYOBJECT* ppRet
 )
@@ -147,7 +170,14 @@ KL_DLLEXPORT KLcBool KLpLaunchFn(
 	pFnRet = PyObject_CallObject(pFn, pArgs);
 	KLP_PROCESS_ERROR(pFnRet);
 
-	*ppRet = pFnRet;
+	if (NULL != ppRet)
+	{
+		// Need copy fn result.
+		*ppRet = pFnRet;
+	}
+	else
+	{
+	}
 	klBool = KL_TRUE;
 
 Exit0:
