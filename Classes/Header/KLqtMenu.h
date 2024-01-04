@@ -27,13 +27,15 @@ class KLqBaseMenu:
 public:
 	PQMENUBAR getMenuBar();
 	static KLqBaseMenu* getInstance();
-	KLcBool initMenuWidget();
+	void initMenuWidget();
 	void setThreadGIL(enum KLEM_PY3GILEVENT emEvent);
 
 public slots:
+	KLcBool kqeOnActionRegisterDeviceWindows();
+	KLcBool kqeOnActionUpdateDevices();
 	KLcBool kqeOnActionConnectPfEye();
 	KLcBool kqeOnActionDisconnectPfEye();
-
+	
 private:
 	KLqBaseMenu();
 	~KLqBaseMenu();
@@ -50,15 +52,17 @@ private:
 	PQMENUBAR m_pMenuBar;
 
 	// Menu bar -> QMenu
-	PQMENU m_pMenuNew;
+	PQMENU m_pMenuDevices;
 	PQMENU m_pMenuCollector;
 	PQMENU m_pMenuSetting;
 	PQMENU m_pMenuAbout;
-
-	// Menu 1st
 	PQMENU m_pMenu1stPerfeye;
 
-	// Menu 2nd action -> QAction
+	// Menu devices
+	PQACTION m_pAcRegisterDevicesWindows;
+	PQACTION m_pAcDevicesFlush;
+
+	// Menu perfeye
 	PQACTION m_pAcPerfeyeConnect;
 	PQACTION m_pAcPerfeyeDisconnect;
 

@@ -15,6 +15,7 @@
 
 #define KLP_RELEASE(p)																		{ if (p) { Py_DecRef(p); (p) = NULL; } }
 #define KLP_LAUNCHCF_WITHNOARGS_UMAIN_NORET(cszpModule, cszpClass)							KLpLaunchClassFn(cszpModule, cszpClass, "UMain", NULL, NULL, NULL)
+#define KLP_LAUNCHCF_WITHNOARGS_UMAIN_RET(cszpModule, cszpClass, ret)						KLpLaunchClassFn(cszpModule, cszpClass, "UMain", NULL, NULL, ret)
 #define KLP_LAUNCHCF_WITHARGS_UMAIN_NORET(cszpModule, cszpClass, pArgs, cszpArgsFormat)		KLpLaunchClassFn(cszpModule, cszpClass, "UMain", pArgs, cszpArgsFormat, NULL)
 #define KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH_NORET(cszpModule, cszpClass)					KLpLaunchClassFn(cszpModule, cszpClass, "OnFrameBreath", NULL, NULL, NULL)
 #define KLP_LAUNCHF_UMAIN_NORET(cszpModule)													KLpLaunchFn(cszpModule, "UMain", NULL, NULL)
@@ -53,12 +54,13 @@ extern "C" {
 		const char* cszpModule, const char* cszpClass, const char* cszpFn, PPYOBJECT pArgs, const char* cszpArgsFormat, PPYOBJECT* ppRet
 	);
 	KL_DLLEXPORT KLcBool KLpLaunchFn(const char* cszpModule, const char* cszpFn, PPYOBJECT pArgs, PPYOBJECT* ppRet);
-	KL_DLLEXPORT KLcBool KLpAnalyzeRet(PPYOBJECT pFnRet, __int64* pllRetCount, ...);
+	KL_DLLEXPORT KLcBool KLpAnalyzeSingleRet(PPYOBJECT pFnRet, __int64 llTagPos, const char* szpRetFormat, PPYOBJECT* ppRet);
 	KL_DLLEXPORT KLcBool KLpAnalyzeRetToLong(PPYOBJECT* arrpAnalyzeRet, __int64 llRetCount, long* arrlRet);
 	KL_DLLEXPORT KLcBool KLpAnalyzeRetToPChar(PPYOBJECT* arrpAnalyzeRet, __int64 llRetCount, char** arrpRet);
 	KL_DLLEXPORT KLcBool KLpAnalyzeRetTupleToPChar(PPYOBJECT pRetTuple, char** arrpRet);
 	KL_DLLEXPORT KLcBool KLpGetLastError();
 	KL_DLLEXPORT const int KLpGetMatchingErrorCode(const char* cszpMatchingErr);
+	KL_DLLEXPORT void KLpGetPyTupleSize(PPYOBJECT pFnRet, __int64* pllRet);
 	KL_DLLEXPORT void KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, PPYOBJECT* ppRet);
 #ifdef __cplusplus
 }

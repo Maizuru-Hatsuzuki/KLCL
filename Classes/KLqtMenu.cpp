@@ -8,6 +8,8 @@
 
 #include "KLcPy.h"
 #include "KLqtMenu.h"
+#include "KLqtRegisterDevice.h"
+#include "KLqtTable.h"
 #include "KBaseMacro.h"
 #include "KLog.h"
 #include "KLcContainer.h"
@@ -19,31 +21,8 @@ KLqBaseMenu* KLqBaseMenu::m_pSelf;
 KLqBaseMenu::KLqBaseMenu()
 {
 	KLcBool klBool		= KL_FALSE;
-	m_pMenuBar			= new QMenuBar();
-	// Menu bar.
-	m_pMenuNew			= KLQ_NEW(QMenu, "New");
-	m_pMenuCollector	= KLQ_NEW(QMenu, "ATsumeru");
-	m_pMenuSetting		= KLQ_NEW(QMenu, "Settei");
-	m_pMenuAbout		= KLQ_NEW(QMenu, "About");
-	// Menu action.
-	m_pMenu1stPerfeye		= KLQ_NEW(QMenu, "Perfeye");
-	m_pAcPerfeyeConnect		= KLQ_NEW(QAction, "Connect");
-	m_pAcPerfeyeDisconnect	= KLQ_NEW(QAction, "Disconnect");
 	
-	m_pMenuCollector->addMenu(m_pMenu1stPerfeye);
-	m_pMenu1stPerfeye->addAction(m_pAcPerfeyeConnect);
-	m_pMenu1stPerfeye->addAction(m_pAcPerfeyeDisconnect);
-	m_pMenuCollector->addSeparator();
-
-	m_pMenuBar->addMenu(m_pMenuNew);
-	m_pMenuBar->addMenu(m_pMenuCollector);
-	m_pMenuBar->addMenu(m_pMenuSetting);
-	m_pMenuBar->addMenu(m_pMenuAbout);
-
-	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionConnectPfEye);
-	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
-
-
+	initMenuWidget();
 	klBool = reInit();
 	ASSERT(klBool);
 }
@@ -53,10 +32,10 @@ KLqBaseMenu::~KLqBaseMenu()
 	KLQ_RELEASE(m_pAcPerfeyeDisconnect);
 	KLQ_RELEASE(m_pAcPerfeyeConnect);
 	KLQ_RELEASE(m_pMenu1stPerfeye);
-	KLQ_RELEASE(m_pMenuNew);
+	KLQ_RELEASE(m_pMenuDevices);
 	KLQ_RELEASE(m_pMenuCollector);
 	KLQ_RELEASE(m_pMenuSetting);
-	KLQ_RELEASE(m_pMenuNew);
+	KLQ_RELEASE(m_pMenuDevices);
 	KLQ_RELEASE(m_pMenuBar);
 	KLQ_RELEASE(m_pSelf);
 
@@ -80,16 +59,45 @@ KLqBool KLqBaseMenu::reInit()
 	klBool = KLwInitShareMem(&m_tCorMemPfeye);
 	KL_PROCESS_ERROR(klBool);
 
-
 	klBool = KL_TRUE;
 Exit0:
 
 	return klBool;
 }
 
-KLcBool KLqBaseMenu::initMenuWidget()
+void KLqBaseMenu::initMenuWidget()
 {
-	return KL_TRUE;
+	m_pMenuBar = new QMenuBar();
+	// Menu devices.
+	m_pMenuDevices = KLQ_NEW(QMenu, "Devices");
+	m_pAcRegisterDevicesWindows = KLQ_NEW(QAction, "Register [Windows]");
+	m_pAcDevicesFlush = KLQ_NEW(QAction, "Flush");
+
+	m_pMenuCollector = KLQ_NEW(QMenu, "ATsumeru");
+	m_pMenuSetting = KLQ_NEW(QMenu, "Settei");
+	m_pMenuAbout = KLQ_NEW(QMenu, "About");
+	// Menu perfeye.
+	m_pMenu1stPerfeye = KLQ_NEW(QMenu, "Perfeye");
+	m_pAcPerfeyeConnect = KLQ_NEW(QAction, "Connect");
+	m_pAcPerfeyeDisconnect = KLQ_NEW(QAction, "Disconnect");
+
+	m_pMenuDevices->addAction(m_pAcRegisterDevicesWindows);
+	m_pMenuDevices->addAction(m_pAcDevicesFlush);
+
+	m_pMenuCollector->addMenu(m_pMenu1stPerfeye);
+	m_pMenu1stPerfeye->addAction(m_pAcPerfeyeConnect);
+	m_pMenu1stPerfeye->addAction(m_pAcPerfeyeDisconnect);
+	m_pMenuCollector->addSeparator();
+
+	m_pMenuBar->addMenu(m_pMenuDevices);
+	m_pMenuBar->addMenu(m_pMenuCollector);
+	m_pMenuBar->addMenu(m_pMenuSetting);
+	m_pMenuBar->addMenu(m_pMenuAbout);
+
+	this->connect(m_pAcRegisterDevicesWindows, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionRegisterDeviceWindows);
+	this->connect(m_pAcDevicesFlush, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionUpdateDevices);
+	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionConnectPfEye);
+	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
 }
 
 KLqBaseMenu* KLqBaseMenu::getInstance()
@@ -137,6 +145,16 @@ DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID _vp)
 	{
 		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn failed.");
 	}
+	return klBool;
+}
+
+KLcBool KLqBaseMenu::kqeOnActionRegisterDeviceWindows()
+{
+	KLcBool klBool = KL_FALSE;
+
+	RegisterDevicesWindows::getInstance()->getWindowHandler()->show();
+	klBool = KL_TRUE;
+Exit0:
 	return klBool;
 }
 	
@@ -216,5 +234,15 @@ Exit0:
 	return klBool;
 }
 
+KLqBool KLqBaseMenu::kqeOnActionUpdateDevices()
+{
+	KLcBool klBool = KL_FALSE;
 
+	klBool = KLqBaseTable::getInstance()->getTableItem();
+	KL_PROCESS_ERROR(klBool);
+
+	klBool = KL_TRUE;
+Exit0:
+	return klBool;
+}
 

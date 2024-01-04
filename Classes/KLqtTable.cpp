@@ -36,35 +36,33 @@ KLcBool KLqBaseTable::getTableItem()
 	KLP_CREATETHREAD_GET_GIL;
 	KLcBool klBool = KL_FALSE;
 	PPYOBJECT ret = NULL;
-	PPYOBJECT ck = NULL;
-	PPYOBJECT yk = NULL;
-	PPYOBJECT arrpyRet[2] = { 0 };
+	PPYOBJECT pyRet = NULL;
 	__int64 llCount = 0;
-	char* arrszpRet[4] = { 0 };
-	KLpLaunchClassFn("R3Nexus", "UAPfeye", "getDevicesInfo", NULL, NULL, &ret);
+	__int64 llPos = 0;
+	char* arrszpRet[MAX_KTABLEROWFIELDS] = { 0 };
+	
+	KLP_LAUNCHCF_WITHNOARGS_UMAIN_RET("R4Debug", "CGetDevices", &ret);
 	KL_PROCESS_ERROR(ret);
+	KLpGetPyTupleSize(ret, &llCount);
 
-	KLpAnalyzeRet(ret, &llCount, &arrpyRet[0], &arrpyRet[1]);
-	for (size_t i = 0; i < llCount; i++)
+	do 
 	{
-		if (1 > i)
-		{
-			klBool = KLpAnalyzeRetTupleToPChar(arrpyRet[i], arrszpRet);
-			KL_PROCESS_ERROR(klBool);
-		}
-		else
-		{
-			klBool = KLpAnalyzeRetTupleToPChar(arrpyRet[i], arrszpRet + 2);
-			KL_PROCESS_ERROR(klBool);
-		}
-	}
+		klBool = KLpAnalyzeSingleRet(ret, llPos, "O", &pyRet);
+		KL_PROCESS_ERROR(klBool);
+		klBool = KLpAnalyzeRetTupleToPChar(pyRet, arrszpRet);
+		KL_PROCESS_ERROR(klBool);
+		klBool = setTableDataALine(llPos, arrszpRet);
+		KL_PROCESS_ERROR(klBool);
+
+		llPos++;
+
+	} while (llCount > llPos);
 
 	KLP_RELEASETHREAD_GIL;
 	klBool = KL_TRUE;
 Exit0:
 	return klBool;
 }
-
 
 KLcBool KLqBaseTable::initTableWidget(float fWindowHeight, float fWindowWidth)
 {
@@ -96,20 +94,19 @@ KLcBool KLqBaseTable::initTableWidget(float fWindowHeight, float fWindowWidth)
 
 KLcBool KLqBaseTable::setTableData()
 {
-	QTableWidgetItem* pItem = new QTableWidgetItem("127.0.0.1");
-	m_pTableWidget->setItem(0, 0, pItem);
+	KLcBool klBool = KL_FALSE;
 
 	return KL_TRUE;
 }
 
-KLcBool KLqBaseTable::setTableDataALine(unsigned int unLine, const char** carrszpData)
+KLcBool KLqBaseTable::setTableDataALine(unsigned int unLine, char** carrszpData)
 {
 	KLcBool klBool = KL_FALSE;
 
 	for (size_t i = 0; i < m_unRow; i++)
 	{
 		QTableWidgetItem* pItem = new QTableWidgetItem(carrszpData[i]);
-		m_pTableWidget->setItem(0, 0, pItem);
+		m_pTableWidget->setItem(unLine, i, pItem);
 	}
 
 	klBool = KL_TRUE;

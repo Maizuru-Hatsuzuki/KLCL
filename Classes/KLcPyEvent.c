@@ -22,7 +22,13 @@ KL_DLLEXPORT void KLpGetPyTupleInt(const int cnArgsCount, const int* cnarrData, 
 	*ppRet = pArgs;
 }
 
-KL_DLLEXPORT KLcBool KLpAnalyzeRet(PPYOBJECT pFnRet, __int64* pllRetCount, ...)
+KL_DLLEXPORT void KLpGetPyTupleSize(PPYOBJECT pFnRet, __int64* pllRet)
+{
+	*pllRet = PyTuple_Size(pFnRet);
+	return;
+}
+
+KL_DLLEXPORT KLcBool KLpAnalyzeSingleRet(PPYOBJECT pFnRet, __int64 llTagPos, const char* szpRetFormat, PPYOBJECT* ppRet)
 {
 	/*
 		备注：这里拿到pyobject指针后，传出去在解析，在获取这里不做解析
@@ -31,32 +37,15 @@ KL_DLLEXPORT KLcBool KLpAnalyzeRet(PPYOBJECT pFnRet, __int64* pllRetCount, ...)
 		返回的结果在 ... 里，传入的指针里。
 	*/
 	KLcBool klBool = KL_FALSE;
-	va_list vaRet;
-	char* szpRetFormat = NULL;
-	__int64 llRetCount = 0;
+	PPYOBJECT ptmpFnRet = NULL;
 
-	llRetCount = PyTuple_Size(pFnRet);
-	*pllRetCount = llRetCount;
-
-	szpRetFormat = (char*)malloc(llRetCount * sizeof(char) + 1);
-	KL_PROCESS_ERROR(szpRetFormat);
-	for (size_t i = 0; i < llRetCount; i++)
-	{
-		// Default type 'O', get pyobject then use other analyzes fn to get it.
-		*(szpRetFormat + i) = 'O';
-	}
-	*(szpRetFormat + llRetCount) = '\0';
-
-	va_start(vaRet, pllRetCount);
-	PyArg_VaParse(pFnRet, szpRetFormat, vaRet);
-	va_end(vaRet);
-
-	KLLOG(KLOG_INFO, L"Get pyObject ret success, total %ld.", llRetCount);
+	*ppRet = PyTuple_GetItem(pFnRet, llTagPos);
+	KL_PROCESS_ERROR(*ppRet);
 
 	klBool = KL_TRUE;
 
 Exit0:
-	KL_RELEASE(szpRetFormat);
+	KLP_RELEASE(ptmpFnRet);
 	return klBool;
 }
 
@@ -64,7 +53,7 @@ KL_DLLEXPORT KLcBool KLpAnalyzeRetToLong(PPYOBJECT* arrpAnalyzeRet, __int64 llRe
 {
 	KLcBool klBool = KL_FALSE;
 
-	for (size_t i = 0; i < llRetCount; i++)
+	for (__int64 i = 0; i < llRetCount; i++)
 	{
 		arrlRet[i] = PyLong_AsLong(arrpAnalyzeRet[i]);
 	}
@@ -79,7 +68,7 @@ KL_DLLEXPORT KLcBool KLpAnalyzeRetToPChar(PPYOBJECT* arrpAnalyzeRet, __int64 llR
 {
 	KLcBool klBool = KL_FALSE;
 
-	for (size_t i = 0; i < llRetCount; i++)
+	for (__int64 i = 0; i < llRetCount; i++)
 	{
 		arrpRet[i] = PyUnicode_AsUTF8(arrpAnalyzeRet[i]);
 	}
@@ -93,18 +82,19 @@ Exit0:
 KL_DLLEXPORT KLcBool KLpAnalyzeRetTupleToPChar(PPYOBJECT pRetTuple, char** arrpRet)
 {
 	KLcBool klBool = KL_FALSE;
-	DWORD dwSize = 0;
+	Py_ssize_t llSize = 0;
 	PPYOBJECT ptmpTag = NULL;
 
 	klBool = PyTuple_Check(pRetTuple);
 	KL_PROCESS_ERROR(klBool);
 
-	dwSize = PyTuple_Size(pRetTuple);
+	llSize = PyTuple_Size(pRetTuple);
 
-	for (size_t i = 0; i < dwSize; i++)
+	for (__int64 i = 0; i < llSize; i++)
 	{
 		ptmpTag = PyTuple_GetItem(pRetTuple, i);
 		arrpRet[i] = PyUnicode_AsUTF8(ptmpTag);
+		KLpGetLastError();
 	}
 
 	klBool = KL_TRUE;

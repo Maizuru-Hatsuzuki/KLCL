@@ -52,6 +52,9 @@
     <ClCompile Include="..\Classes\KLqtTable.cpp">
       <Filter>Source Files\KLqt</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\KLqtRegisterDevice.cpp">
+      <Filter>Source Files\KLqt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\Header\KBaseMacro.h">
@@ -64,6 +67,9 @@
       <Filter>Header Files\KLqt</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Header\KLqtTable.h">
+      <Filter>Header Files\KLqt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Header\KLqtRegisterDevice.h">
       <Filter>Header Files\KLqt</Filter>
     </ClInclude>
   </ItemGroup>

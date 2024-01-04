@@ -2,6 +2,7 @@
 #include "KLclRay.h"
 #include "KLqtMenu.h"
 #include "KLqtTable.h"
+#include "KLqtRegisterDevice.h"
 #include "KLog.h"
 
 
@@ -42,6 +43,9 @@ void KLclRay::ReInit()
 	
 	KLqBaseTable::getInstance()->initTableWidget(m_fWindowHeight, m_fWindowWidth);
 	KLqBaseTable::getInstance()->m_pTableWidget->setParent(this);
+
+	RegisterDevicesWindows::getInstance(m_fWindowHeight, m_fWindowWidth)->klqCreateWindow();
+
 	m_pQHLayoutBase->addWidget(KLqBaseTable::getInstance()->m_pTableWidget);
 
 	klqCreateTextEdit(&m_pQTKLLog);
@@ -87,9 +91,6 @@ void KLclRay::KLqHeartbeat(void* _vp)
 	while (true)
 	{
 		klBool = pThis->klqUpdateSysLogForPy();
-		ASSERT(klBool);
-
-		klBool = KLqBaseTable::getInstance()->getTableItem();
 		ASSERT(klBool);
 
 		Sleep(10);

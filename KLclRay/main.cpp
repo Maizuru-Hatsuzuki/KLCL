@@ -32,7 +32,7 @@ Exit0:
 
 int main(int argc, char *argv[])
 {
-    debugCC();
+ //   debugCC();
     QApplication a(argc, argv);
     
     

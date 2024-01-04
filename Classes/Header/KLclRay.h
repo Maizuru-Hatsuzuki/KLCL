@@ -20,8 +20,6 @@
 #define KLQ_UPDATELOG			KLclRay::getInstance()->klqUpdateSysLog
 #define KLQ_LOG(level, fmt, ...)	{ KLLOG(level, fmt, __VA_ARGS__); KLQ_UPDATELOG(); }
 
-#define MAX_KP_THREAD 10
-#define MAX_KTABLEROWFIELDS 6
 
 typedef int         KLqBool;
 typedef QTextEdit*  PQTEXTEDIT;

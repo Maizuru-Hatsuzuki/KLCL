@@ -192,11 +192,13 @@
     <QtUic Include="KLclRay.ui" />
     <ClCompile Include="..\Classes\KLqtMenu.cpp" />
     <ClCompile Include="..\Classes\KLqtTable.cpp" />
+    <ClCompile Include="..\Classes\KLqtRegisterDevice.cpp" />
     <ClCompile Include="KLclRay.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\Header\KBaseMacro.h" />
+    <ClInclude Include="..\Classes\Header\KLqtRegisterDevice.h" />
     <ClInclude Include="..\Classes\Header\KLqtTable.h" />
     <QtMoc Include="..\Classes\Header\KLclRay.h" />
     <ClInclude Include="..\Classes\Header\KLclRayEx.h" />

@@ -26,7 +26,7 @@ public:
 public:
 	// Qt.
 	KLcBool setTableData();
-	KLcBool setTableDataALine(unsigned int unLine, const char** carrszpData);
+	KLcBool setTableDataALine(unsigned int unLine, char** carrszpData);
 
 public:
 	QTableWidget* m_pTableWidget;
