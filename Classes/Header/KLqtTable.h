@@ -19,17 +19,15 @@ class KLqBaseTable:
 {
 
 public:
-	KLcBool initTableWidget(float fWindowHeight, float fWindowWidth);
+	KLcBool reInit(float fWindowHeight, float fWindowWidth);
 	static KLqBaseTable* getInstance();
 	KLcBool getTableItem();
+	QTableWidget* getTableWidget();
 
 public:
 	// Qt.
 	KLcBool setTableData();
 	KLcBool setTableDataALine(unsigned int unLine, char** carrszpData);
-
-public:
-	QTableWidget* m_pTableWidget;
 
 private:
 	KLqBaseTable();
@@ -48,7 +46,7 @@ private:
 
 private:
 	// Qt.
-	
+	QTableWidget* m_pTableWidget;
 };
 
 

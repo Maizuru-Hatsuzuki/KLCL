@@ -27,12 +27,6 @@ typedef QMenuBar*   PQMENUBAR;
 typedef QMenu*      PQMENU;
 typedef QAction*    PQACTION;
 
-struct _tKLqDevicesInfo
-{
-	
-};
-
-
 
 class KLclRay : public QMainWindow
 {
@@ -56,8 +50,8 @@ private:
     KLclRay(const KLclRay& pSelf);
     const KLclRay& operator=(const KLclRay& pSelf);
 
-	void ReInit();
-
+	KLcBool reInit();
+	void reInitQt();
 
 private:
 	// Qt.

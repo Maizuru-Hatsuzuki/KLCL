@@ -20,66 +20,57 @@ KLqBaseMenu* KLqBaseMenu::m_pSelf;
 
 KLqBaseMenu::KLqBaseMenu()
 {
-	KLcBool klBool		= KL_FALSE;
+	KLcBool klRet		= KL_FALSE;
 	
 	initMenuWidget();
-	klBool = reInit();
-	ASSERT(klBool);
+	klRet = reInit();
+	ASSERT(klRet);
 }
 
 KLqBaseMenu::~KLqBaseMenu()
 {
-	KLQ_RELEASE(m_pAcPerfeyeDisconnect);
-	KLQ_RELEASE(m_pAcPerfeyeConnect);
-	KLQ_RELEASE(m_pMenu1stPerfeye);
-	KLQ_RELEASE(m_pMenuDevices);
-	KLQ_RELEASE(m_pMenuCollector);
-	KLQ_RELEASE(m_pMenuSetting);
-	KLQ_RELEASE(m_pMenuDevices);
-	KLQ_RELEASE(m_pMenuBar);
-	KLQ_RELEASE(m_pSelf);
-
+	uninitMenuWidget();
 	KLclDestroySinglyCirLinkedList(m_pListPyWorker);
 	KLwUninitShareMem(&m_tCorMemPfeye);
 }
 
 KLqBool KLqBaseMenu::reInit()
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 	m_tCorMemPfeye.wsMemName = WORKERNAME_W_PERFEYE;
 	m_tCorMemPfeye.dwSize = sizeof(enum KLEM_SHAREMEMFLAGS);
 	m_tPy3BreathPfeye = { KL_FALSE, WORKERNAME_W_PERFEYE, (LPKLTHREAD_WORKER_FN)KLqBaseMenu::kqThLaunchPfeye };
 
-	klBool = KLclCreateSinglyCirLinkedList(&m_pListPyWorker);
-	KL_PROCESS_ERROR(klBool);
+	klRet = KLclCreateSinglyCirLinkedList(&m_pListPyWorker);
+	KL_PROCESS_ERROR(klRet);
 
-	klBool = KLwThCreateThreadPool(MAX_KP_THREAD, &m_pThPoolPyBreath);
-	ASSERT(klBool);
+	klRet = KLwThCreateThreadPool(MAX_KP_THREAD, &m_pThPoolPyBreath);
+	ASSERT(klRet);
 
-	klBool = KLwInitShareMem(&m_tCorMemPfeye);
-	KL_PROCESS_ERROR(klBool);
+	klRet = KLwInitShareMem(&m_tCorMemPfeye);
+	KL_PROCESS_ERROR(klRet);
 
-	klBool = KL_TRUE;
+	klRet = KL_TRUE;
 Exit0:
 
-	return klBool;
+	return klRet;
 }
 
 void KLqBaseMenu::initMenuWidget()
 {
 	m_pMenuBar = new QMenuBar();
 	// Menu devices.
-	m_pMenuDevices = KLQ_NEW(QMenu, "Devices");
-	m_pAcRegisterDevicesWindows = KLQ_NEW(QAction, "Register [Windows]");
-	m_pAcDevicesFlush = KLQ_NEW(QAction, "Flush");
+	m_pMenuDevices						= KLQ_NEW(QMenu, "Devices");
+	m_pAcRegisterDevicesWindows			= KLQ_NEW(QAction, "Register [Windows]");
+	m_pAcDevicesFlush					= KLQ_NEW(QAction, "Flush");
 
-	m_pMenuCollector = KLQ_NEW(QMenu, "ATsumeru");
-	m_pMenuSetting = KLQ_NEW(QMenu, "Settei");
-	m_pMenuAbout = KLQ_NEW(QMenu, "About");
+	m_pMenuCollector					= KLQ_NEW(QMenu, "ATsumeru");
+	m_pMenuSetting						= KLQ_NEW(QMenu, "Settei");
+	m_pMenuAbout						= KLQ_NEW(QMenu, "About");
 	// Menu perfeye.
-	m_pMenu1stPerfeye = KLQ_NEW(QMenu, "Perfeye");
-	m_pAcPerfeyeConnect = KLQ_NEW(QAction, "Connect");
-	m_pAcPerfeyeDisconnect = KLQ_NEW(QAction, "Disconnect");
+	m_pMenu1stPerfeye					= KLQ_NEW(QMenu, "Perfeye");
+	m_pAcPerfeyeConnect					= KLQ_NEW(QAction, "Connect");
+	m_pAcPerfeyeDisconnect				= KLQ_NEW(QAction, "Disconnect");
 
 	m_pMenuDevices->addAction(m_pAcRegisterDevicesWindows);
 	m_pMenuDevices->addAction(m_pAcDevicesFlush);
@@ -98,6 +89,21 @@ void KLqBaseMenu::initMenuWidget()
 	this->connect(m_pAcDevicesFlush, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionUpdateDevices);
 	this->connect(m_pAcPerfeyeConnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionConnectPfEye);
 	this->connect(m_pAcPerfeyeDisconnect, &QAction::triggered, this, &KLqBaseMenu::kqeOnActionDisconnectPfEye);
+}
+
+void KLqBaseMenu::uninitMenuWidget()
+{
+	KLQ_RELEASE(m_pMenuAbout);
+	KLQ_RELEASE(m_pAcRegisterDevicesWindows);
+	KLQ_RELEASE(m_pAcDevicesFlush);
+	KLQ_RELEASE(m_pAcPerfeyeDisconnect);
+	KLQ_RELEASE(m_pAcPerfeyeConnect);
+	KLQ_RELEASE(m_pMenu1stPerfeye);
+	KLQ_RELEASE(m_pMenuDevices);
+	KLQ_RELEASE(m_pMenuCollector);
+	KLQ_RELEASE(m_pMenuSetting);
+	KLQ_RELEASE(m_pMenuBar);
+	KLQ_RELEASE(m_pSelf);
 }
 
 KLqBaseMenu* KLqBaseMenu::getInstance()
@@ -131,13 +137,13 @@ void KLqBaseMenu::setThreadGIL(enum KLEM_PY3GILEVENT emEvent)
 
 DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID _vp)
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 	PPYOBJECT pArgs = (PPYOBJECT)_vp;
 	KLqBaseMenu::getInstance()->setThreadGIL(KGIL_PERFEYE);
 
 	// Python while will block here.
-	klBool = KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH_NORET("WizardUltra", "UAPfeye");
-	if (KL_TRUE == klBool)
+	klRet = KLP_LAUNCHCF_WITHNOARGS_ONFRAMEBREATH_NORET("WizardUltra", "UAPfeye");
+	if (KL_TRUE == klRet)
 	{
 		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn success.");
 	}
@@ -145,22 +151,22 @@ DWORD WINAPI KLqBaseMenu::kqThLaunchPfeye(LPVOID _vp)
 	{
 		KLQ_LOG(KLOG_INFO, L"End perfeye breath fn failed.");
 	}
-	return klBool;
+	return klRet;
 }
 
 KLcBool KLqBaseMenu::kqeOnActionRegisterDeviceWindows()
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 
 	RegisterDevicesWindows::getInstance()->getWindowHandler()->show();
-	klBool = KL_TRUE;
+	klRet = KL_TRUE;
 Exit0:
-	return klBool;
+	return klRet;
 }
 	
 KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
 {
-	KLcBool klBool							= KL_FALSE;
+	KLcBool klRet							= KL_FALSE;
 	DWORD dwTidPfeye						= 0;
 	PPYOBJECT pArgs							= NULL;
 	KLW_THREADWORKER_PTR ptWorker			= NULL;
@@ -170,23 +176,23 @@ KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
 	if (KL_FALSE == m_tPy3BreathPfeye.nIsInit)
 	{
 		pPyThreadState = _PyThreadState_UncheckedGet();
-		klBool = KLwThCreateThreadWorker(L"[PY3 OnFrameBreathe] Perfeye", m_tPy3BreathPfeye.fn, NULL, &ptWorker);
-		KL_PROCESS_ERROR(klBool);
-		klBool = KLclCreateLinkedListData(KT_VPTR, (void*)ptWorker, m_tPy3BreathPfeye.cwsDesc, &ptWorkerRecord);
-		KL_PROCESS_ERROR(klBool);
-		klBool = m_pListPyWorker->Append(m_pListPyWorker, ptWorkerRecord);
-		KL_PROCESS_ERROR(klBool);
+		klRet = KLwThCreateThreadWorker(L"[PY3 OnFrameBreathe] Perfeye", m_tPy3BreathPfeye.fn, NULL, &ptWorker);
+		KL_PROCESS_ERROR(klRet);
+		klRet = KLclCreateLinkedListData(KT_VPTR, (void*)ptWorker, m_tPy3BreathPfeye.cwsDesc, &ptWorkerRecord);
+		KL_PROCESS_ERROR(klRet);
+		klRet = m_pListPyWorker->Append(m_pListPyWorker, ptWorkerRecord);
+		KL_PROCESS_ERROR(klRet);
 		
 		KLQ_LOG(KLOG_INFO, L"Connecting perfeye breath fn.");
 		if (NULL != pPyThreadState)
 		{
 			PyEval_ReleaseThread(pPyThreadState);
 		}
-		klBool = m_pThPoolPyBreath->AddWorker(m_pThPoolPyBreath, ptWorker);
-		KL_PROCESS_ERROR(klBool);
+		klRet = m_pThPoolPyBreath->AddWorker(m_pThPoolPyBreath, ptWorker);
+		KL_PROCESS_ERROR(klRet);
 
-		klBool = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_INIT);
-		KL_PROCESS_ERROR(klBool);
+		klRet = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_INIT);
+		KL_PROCESS_ERROR(klRet);
 
 		m_tPy3BreathPfeye.nIsInit = KL_TRUE;
 	}
@@ -195,29 +201,29 @@ KLcBool KLqBaseMenu::kqeOnActionConnectPfEye()
 		KLQ_LOG(KLOG_WARING, L"Perfeye breath fn is running.");
 	}
 
-	klBool = KL_TRUE;
+	klRet = KL_TRUE;
 Exit0:
 	
-	return klBool;
+	return klRet;
 }
 
 KLqBool KLqBaseMenu::kqeOnActionDisconnectPfEye()
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 	PPYOBJECT pArgs = NULL;
 	const int cnarrArgs[1] = { 0 };
 	unsigned int unPfeyeWorkerPos = 0;
 
 	if (KL_TRUE == m_tPy3BreathPfeye.nIsInit)
 	{
-		klBool = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_RELEASE);
-		KL_PROCESS_ERROR(klBool);
+		klRet = KLwSetShareMem(&m_tCorMemPfeye, KMSHARE_RELEASE);
+		KL_PROCESS_ERROR(klRet);
 
-		klBool = m_pListPyWorker->FindPos(m_pListPyWorker, NULL, WORKERNAME_W_PERFEYE, &unPfeyeWorkerPos);
-		KL_PROCESS_ERROR(klBool);
+		klRet = m_pListPyWorker->FindPos(m_pListPyWorker, NULL, WORKERNAME_W_PERFEYE, &unPfeyeWorkerPos);
+		KL_PROCESS_ERROR(klRet);
 
-		klBool = m_pListPyWorker->Remove(m_pListPyWorker, unPfeyeWorkerPos);
-		KL_PROCESS_ERROR(klBool);
+		klRet = m_pListPyWorker->Remove(m_pListPyWorker, unPfeyeWorkerPos);
+		KL_PROCESS_ERROR(klRet);
 
 		KLqBaseMenu::getInstance()->setThreadGIL(KGIL_PERFEYE);
 		PyGILState_Release(m_emGILPfeye);
@@ -229,20 +235,20 @@ KLqBool KLqBaseMenu::kqeOnActionDisconnectPfEye()
 		KLQ_LOG(KLOG_WARING, L"Perfeye breath fn is not running.");
 	}
 
-	klBool = KL_TRUE;
+	klRet = KL_TRUE;
 Exit0:
-	return klBool;
+	return klRet;
 }
 
 KLqBool KLqBaseMenu::kqeOnActionUpdateDevices()
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 
-	klBool = KLqBaseTable::getInstance()->getTableItem();
-	KL_PROCESS_ERROR(klBool);
+	klRet = KLqBaseTable::getInstance()->getTableItem();
+	KL_PROCESS_ERROR(klRet);
 
-	klBool = KL_TRUE;
+	klRet = KL_TRUE;
 Exit0:
-	return klBool;
+	return klRet;
 }
 

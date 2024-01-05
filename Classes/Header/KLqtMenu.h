@@ -28,6 +28,7 @@ public:
 	PQMENUBAR getMenuBar();
 	static KLqBaseMenu* getInstance();
 	void initMenuWidget();
+	void uninitMenuWidget();
 	void setThreadGIL(enum KLEM_PY3GILEVENT emEvent);
 
 public slots:

@@ -12,63 +12,77 @@ KLclRay* KLclRay::m_pSelf;
 KLclRay::KLclRay(QWidget *parent)
     : QMainWindow(parent)
 {
+	KLcBool klRet = KL_FALSE;
+
     ui.setupUi(this);
-    ReInit();
+    klRet = reInit();
+	ASSERT(klRet);
 }
 
 KLclRay::~KLclRay()
 {
-    KLcBool klBool = KL_FALSE;
+    KLcBool klRet = KL_FALSE;
 
     KLQ_RELEASE(m_pQHLayoutBase);
     KLQ_RELEASE(m_pQHLayoutBottom);
     KLQ_RELEASE(m_pSelf);
 
-	klBool = KLpUninitPy3();
-	ASSERT(klBool);
+	klRet = KLpUninitPy3();
+	ASSERT(klRet);
 	KLwUninitShareMem(&m_tCorMemPyLog);
 }
 
-void KLclRay::ReInit()
+KLcBool KLclRay::reInit()
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
     DWORD dwTidUpdateSysLog = 0;
-	m_fWindowHeight = this->geometry().height();
-	m_fWindowWidth = this->geometry().width();
-	m_pQHLayoutBase = new QHBoxLayout;
-	m_pQHLayoutBottom = new QHBoxLayout;
-	setLayout(m_pQHLayoutBase);
-
-	this->setMenuBar(KLqBaseMenu::getInstance()->getMenuBar());
 	
-	KLqBaseTable::getInstance()->initTableWidget(m_fWindowHeight, m_fWindowWidth);
-	KLqBaseTable::getInstance()->m_pTableWidget->setParent(this);
+	m_tCorMemPyLog.wsMemName = WORKERNAME_W_PYLOG;
+	m_tCorMemPyLog.dwSize = sizeof(enum KLEM_SHAREMEMFLAGS);
 
-	RegisterDevicesWindows::getInstance(m_fWindowHeight, m_fWindowWidth)->klqCreateWindow();
-
-	m_pQHLayoutBase->addWidget(KLqBaseTable::getInstance()->m_pTableWidget);
-
-	klqCreateTextEdit(&m_pQTKLLog);
-	ASSERT(m_pQTKLLog);
-	m_pQHLayoutBase->addWidget(m_pQTKLLog);
+	reInitQt();
 	
-	klBool = KLpInitPy3();
-	ASSERT(klBool);
+	klRet = KLpInitPy3();
+	KL_PROCESS_ERROR(klRet);
     KLLOG(KLOG_INFO, L"Init klp python success.");
 	klqUpdateSysLog();
 
-	m_tCorMemPyLog.wsMemName = WORKERNAME_W_PYLOG;
-	m_tCorMemPyLog.dwSize = sizeof(enum KLEM_SHAREMEMFLAGS);
-	klBool = KLwInitShareMem(&m_tCorMemPyLog);
-	ASSERT(klBool);
+	klRet = KLwInitShareMem(&m_tCorMemPyLog);
+	KL_PROCESS_ERROR(klRet);
 
+	// Pip python package.
 	KLP_LAUNCHF_UMAIN_NORET("R2Vigilante");
 
 	// Print python log thread.
 	_beginthread((_beginthread_proc_type)KLclRay::KLqHeartbeat, 0, (void*)this);
 
+	klRet = KL_TRUE;
 Exit0:
-	return;
+	return klRet;
+}
+
+void KLclRay::reInitQt()
+{
+	m_fWindowHeight		= this->geometry().height();
+	m_fWindowWidth		= this->geometry().width();
+	m_pQHLayoutBase		= new QHBoxLayout;
+	m_pQHLayoutBottom	= new QHBoxLayout;
+
+	this->setLayout(m_pQHLayoutBase);
+	this->setMenuBar(KLqBaseMenu::getInstance()->getMenuBar());
+
+	// Menu.
+	KLqBaseTable::getInstance()->reInit(m_fWindowHeight, m_fWindowWidth);
+	KLqBaseTable::getInstance()->getTableWidget()->setParent(this);
+	m_pQHLayoutBase->addWidget(KLqBaseTable::getInstance()->getTableWidget());
+
+	// Register device dialog.
+	RegisterDevicesWindows::getInstance(m_fWindowHeight, m_fWindowWidth)->initWindowDialog();
+
+	// Log info edit.
+	klqCreateTextEdit(&m_pQTKLLog);
+	ASSERT(m_pQTKLLog);
+	m_pQHLayoutBase->addWidget(m_pQTKLLog);
 }
 
 KLclRay* KLclRay::getInstance()
@@ -82,7 +96,7 @@ KLclRay* KLclRay::getInstance()
 
 void KLclRay::KLqHeartbeat(void* _vp)
 {
-	KLcBool klBool = KL_FALSE;
+	KLcBool klRet = KL_FALSE;
 	KLclRay* pThis = (KLclRay*)_vp;
 
 	// Init thread, so don't need _PyThreadState_UncheckedGet.
@@ -90,8 +104,8 @@ void KLclRay::KLqHeartbeat(void* _vp)
 
 	while (true)
 	{
-		klBool = pThis->klqUpdateSysLogForPy();
-		ASSERT(klBool);
+		klRet = pThis->klqUpdateSysLogForPy();
+		ASSERT(klRet);
 
 		Sleep(10);
 	}
@@ -101,21 +115,21 @@ void KLclRay::KLqHeartbeat(void* _vp)
 
 KLcBool KLclRay::klqUpdateSysLogForPy()
 {
-	KLcBool klBool					= KL_FALSE;
+	KLcBool klRet					= KL_FALSE;
 	WCHAR wszarrLog[MAX_ZPRINTF]	= { 0 };
 	CHAR szarrLog[MAX_ZPRINTF]		= { 0 };
 	int nFlag						= KL_TRUE;
 	void* vpFlags					= malloc(sizeof(enum KLEM_SHAREMEMFLAGS));
 
-	klBool = KLwGetShareMem(&m_tCorMemPyLog, &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
-	KL_PROCESS_ERROR(klBool);
+	klRet = KLwGetShareMem(&m_tCorMemPyLog, &vpFlags, sizeof(enum KLEM_SHAREMEMFLAGS));
+	KL_PROCESS_ERROR(klRet);
 
 	switch (*(KLEM_SHAREMEMFLAGS*)vpFlags)
 	{
 	case KMSHARE_INIT:
 		klqUpdateSysLog();
-		klBool = KLwResetShareMem(&m_tCorMemPyLog);
-		KL_PROCESS_ERROR(klBool);
+		klRet = KLwResetShareMem(&m_tCorMemPyLog);
+		KL_PROCESS_ERROR(klRet);
 		break;
 
 	case KMSHARE_EXIT:
@@ -127,7 +141,7 @@ KLcBool KLclRay::klqUpdateSysLogForPy()
 
 Exit0:
 	KL_RELEASE(vpFlags);
-	return klBool;
+	return klRet;
 }
 
 void KLclRay::klqUpdateSysLog()

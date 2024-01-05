@@ -31,6 +31,11 @@ KLqBaseTable* KLqBaseTable::getInstance()
 	return m_pSelf;
 }
 
+QTableWidget* KLqBaseTable::getTableWidget()
+{
+	return m_pTableWidget;
+}
+
 KLcBool KLqBaseTable::getTableItem()
 {
 	KLP_CREATETHREAD_GET_GIL;
@@ -64,7 +69,7 @@ Exit0:
 	return klBool;
 }
 
-KLcBool KLqBaseTable::initTableWidget(float fWindowHeight, float fWindowWidth)
+KLcBool KLqBaseTable::reInit(float fWindowHeight, float fWindowWidth)
 {
 	m_pTableWidget			= new QTableWidget(m_unLine, MAX_KTABLEROWFIELDS);
 	QHeaderView* pHeader	= m_pTableWidget->horizontalHeader();
@@ -87,6 +92,7 @@ KLcBool KLqBaseTable::initTableWidget(float fWindowHeight, float fWindowWidth)
 	m_pTableWidget->setColumnWidth(1, 200);
 	m_pTableWidget->setColumnWidth(3, 300);
 	m_pTableWidget->setColumnWidth(4, 200);
+	m_pTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
 	setTableData();
 	return KL_TRUE;
